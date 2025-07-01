@@ -75,7 +75,7 @@ export function CountdownTimer({ title, date }: CountdownTimerProps) {
     )
   }
 
-  const timerComponents: JSX.Element[] = []
+  const timerComponents: React.ReactElement[] = []
 
   Object.keys(timeLeft).forEach((interval) => {
     const key = interval as keyof TimeLeft
