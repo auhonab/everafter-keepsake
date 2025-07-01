@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F5F5DC;
+  --foreground: #1a1a1a;
+  --primary: #FFB7A7;
+  --accent: #E79E92;
+  --muted: #f0f0f0;
+  --muted-foreground: #6b6b6b;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --border: #e5e5e5;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-merriweather), Merriweather, serif;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Typography enhancements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-dancing-script), 'Dancing Script', cursive;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+p, span, div {
+  font-family: var(--font-merriweather), 'Merriweather', serif;
+}
+
+/* Enhance readability */
+.font-headline {
+  letter-spacing: -0.02em;
+  font-feature-settings: "liga" 1, "kern" 1;
+}
+
+.font-body {
+  font-feature-settings: "liga" 1, "kern" 1;
+  text-rendering: optimizeLegibility;
+}
