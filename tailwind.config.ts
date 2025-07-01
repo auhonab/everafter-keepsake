@@ -9,38 +9,38 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#F5F5DC", // Light beige
-        foreground: "#1a1a1a",
+        background: "#FDF4E3", // Soft vanilla-beige
+        foreground: "#3B2F2F", // Deep cocoa brown
         primary: {
-          DEFAULT: "#FFB7A7", // Light peachy-pink
-          foreground: "#1a1a1a",
+          DEFAULT: "#FADADD", // Light blush pink
+          foreground: "#3B2F2F", // Deep cocoa brown
         },
         accent: {
-          DEFAULT: "#E79E92", // Dusty rose
-          foreground: "#1a1a1a",
+          DEFAULT: "#EAC8C8", // Gentle pink tint
+          foreground: "#3B2F2F", // Deep cocoa brown
         },
         muted: {
-          DEFAULT: "#f0f0f0",
-          foreground: "#6b6b6b",
+          DEFAULT: "#FFFDF7", // Subtle off-white
+          foreground: "#7A6E6E", // Muted taupe-grey
         },
         card: {
-          DEFAULT: "#ffffff",
-          foreground: "#1a1a1a",
+          DEFAULT: "#FFFDF7", // Subtle off-white for card boxes
+          foreground: "#3B2F2F", // Deep cocoa brown
         },
         popover: {
-          DEFAULT: "#ffffff",
-          foreground: "#1a1a1a",
+          DEFAULT: "#FFFDF7", // Subtle off-white
+          foreground: "#3B2F2F", // Deep cocoa brown
         },
-        border: "#e5e5e5",
-        input: "#e5e5e5",
-        ring: "#FFB7A7",
+        border: "#EAC8C8", // Gentle pink tint for borders
+        input: "#EAC8C8", // Gentle pink tint
+        ring: "#FADADD", // Light blush pink
         destructive: {
           DEFAULT: "#ef4444",
-          foreground: "#ffffff",
+          foreground: "#FFFDF7",
         },
         secondary: {
-          DEFAULT: "#f1f5f9",
-          foreground: "#0f172a",
+          DEFAULT: "#7A6E6E", // Muted taupe-grey for secondary text
+          foreground: "#3B2F2F", // Deep cocoa brown
         },
       },
       fontFamily: {

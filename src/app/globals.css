@@ -1,37 +1,53 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F5F5DC;
-  --foreground: #1a1a1a;
-  --primary: #FFB7A7;
-  --accent: #E79E92;
-  --muted: #f0f0f0;
-  --muted-foreground: #6b6b6b;
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
-  --border: #e5e5e5;
+  /* Updated color palette with warm, nostalgic tones */
+  --background: #FDF4E3;
+  --foreground: #3B2F2F;
+  --primary: #d2abaf;
+  --accent: #EAC8C8;
+  --muted: #c1ae76;
+  --muted-foreground: #7A6E6E;
+  --card: #fef4f4;
+  --card-foreground: #3B2F2F;
+  --border: #784949;
+  
+  /* Font variables */
+  --font-dancing-script: 'Dancing Script', cursive;
+  --font-merriweather: 'Merriweather', serif;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-merriweather), Merriweather, serif;
+  font-family: var(--font-merriweather);
   font-weight: 400;
   line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Typography enhancements */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-dancing-script), 'Dancing Script', cursive;
+  font-family: var(--font-dancing-script);
   font-weight: 700;
   line-height: 1.2;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+  font-feature-settings: "liga" 1, "kern" 1;
 }
 
 p, span, div {
-  font-family: var(--font-merriweather), 'Merriweather', serif;
+  font-family: var(--font-merriweather);
+  font-feature-settings: "liga" 1, "kern" 1;
 }
 
-/* Enhance readability */
+/* Enhanced readability classes */
 .font-headline {
   letter-spacing: -0.02em;
   font-feature-settings: "liga" 1, "kern" 1;
@@ -40,4 +56,223 @@ p, span, div {
 .font-body {
   font-feature-settings: "liga" 1, "kern" 1;
   text-rendering: optimizeLegibility;
+}
+
+/* Card component styles */
+.card {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Box container with circular icon */
+.box-container {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease-in-out;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.box-container:hover,
+.box-container:focus-within {
+  border-color: var(--accent);
+}
+
+.icon-circle {
+  width: 48px;
+  height: 48px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+
+.box-content {
+  flex: 1;
+}
+
+.box-title {
+  font-family: var(--font-dancing-script);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
+}
+
+.box-description {
+  font-family: var(--font-merriweather);
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Button styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-family: var(--font-merriweather);
+  font-weight: 400;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--foreground);
+}
+
+.btn-primary:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--muted);
+  border-color: var(--accent);
+}
+
+/* Form elements */
+input, textarea, select {
+  font-family: var(--font-merriweather);
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--foreground);
+  transition: border-color 0.2s ease-in-out;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(234, 200, 200, 0.1);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--muted-foreground);
+}
+
+/* Utility classes */
+.text-primary { color: var(--foreground); }
+.text-secondary { color: var(--muted-foreground); }
+.bg-primary { background: var(--primary); }
+.bg-card { background: var(--card); }
+.border-accent { border-color: var(--accent); }
+
+/* Radix UI Select Component Fixes for Dropdown Visibility */
+[data-radix-select-content] {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-radix-select-item] {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+[data-radix-select-item]:hover,
+[data-radix-select-item][data-highlighted] {
+  background: var(--accent) !important;
+  color: var(--foreground) !important;
+}
+
+[data-radix-select-trigger] {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ShadCN Select specific overrides */
+.bg-popover {
+  background: var(--card) !important;
+}
+
+.text-popover-foreground {
+  color: var(--foreground) !important;
+}
+
+/* Force visibility for all dropdown elements */
+[role="listbox"] {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+}
+
+[role="option"] {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+[role="option"]:hover,
+[role="option"][data-highlighted] {
+  background: var(--accent) !important;
+  color: var(--foreground) !important;
+}
+
+/* Additional select element fixes */
+select option {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.5rem; }
+  
+  .box-container {
+    padding: 1rem;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .icon-circle {
+    align-self: center;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection styling */
+::selection {
+  background: var(--primary);
+  color: var(--foreground);
 }
