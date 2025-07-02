@@ -6,6 +6,11 @@ export interface IMemory extends mongoose.Document {
   date: Date
   images: string[]
   location?: string
+  coordinates?: {
+    lat: number
+    lng: number
+  }
+  locationName?: string
   tags: string[]
   userId: mongoose.Types.ObjectId
   isPrivate: boolean
@@ -29,6 +34,17 @@ const MemorySchema = new mongoose.Schema<IMemory>({
     type: String,
   }],
   location: {
+    type: String,
+  },
+  coordinates: {
+    lat: {
+      type: Number,
+    },
+    lng: {
+      type: Number,
+    },
+  },
+  locationName: {
     type: String,
   },
   tags: [{

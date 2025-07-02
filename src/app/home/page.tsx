@@ -12,28 +12,10 @@ import {
 import Header from "@/components/common/Header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import ImageGallery from "@/components/ui/image-gallery"
+import WritingPromptGenerator from "@/components/ui/writing-prompt-generator"
 import PoemGenerator from "@/components/PoemGenerator"
 
 export default function Home() {
-  const heroImages = [
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Couple smiling together",
-      dataHint: "couple smiling"
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Romantic dinner date",
-      dataHint: "romantic dinner"
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Walking together in nature", 
-      dataHint: "couple walking in nature"
-    }
-  ]
-
   const features = [
     {
       icon: Calendar,
@@ -93,9 +75,9 @@ export default function Home() {
                 </p>
               </div>
               
-              {/* Right Column - Image Gallery */}
-              <div className="relative">
-                <ImageGallery images={heroImages} />
+              {/* Right Column - Writing Prompt Generator */}
+              <div className="relative flex justify-center">
+                <WritingPromptGenerator />
               </div>
             </div>
           </div>

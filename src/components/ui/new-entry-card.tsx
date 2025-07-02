@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,6 +20,7 @@ interface NewEntryCardProps {
   additionalFields?: React.ReactNode
   buttonText?: string
   layout?: 'vertical' | 'horizontal'
+  initialContent?: string
 }
 
 /**
@@ -36,15 +37,25 @@ export default function NewEntryCard({
   includeImage = false,
   additionalFields,
   buttonText = 'Create',
-  layout = 'vertical'
+  layout = 'vertical',
+  initialContent = ''
 }: NewEntryCardProps) {
   const [isCreating, setIsCreating] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
-    content: '',
+    content: initialContent,
     image: '',
   })
+  
+  // Update content when initialContent changes
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, content: initialContent }))
+    // If there's initial content, automatically open the form
+    if (initialContent) {
+      setIsCreating(true)
+    }
+  }, [initialContent])
   
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import Header from "@/components/common/Header"
 import { Button } from "@/components/ui/button"
 import EditableCard from "@/components/ui/editable-card"
@@ -22,6 +23,10 @@ export default function OurJournal() {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
+  const searchParams = useSearchParams()
+  
+  // Get the prompt from URL params
+  const promptFromUrl = searchParams.get('prompt')
   
   useEffect(() => {
     loadJournalEntries()
@@ -134,6 +139,7 @@ export default function OurJournal() {
             includeContent={true}
             includeImage={false}
             buttonText="Add Entry"
+            initialContent={promptFromUrl ? `Reflecting on: "${promptFromUrl}"\n\n` : ''}
           />
 
           {/* Journal Entries */}
