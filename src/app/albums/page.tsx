@@ -618,77 +618,86 @@ function AlbumsContent() {
         
         {/* Add Memory Dialog */}
         <Dialog open={openMemoryDialog} onOpenChange={setOpenMemoryDialog}>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="max-w-6xl w-[90vw] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Memory</DialogTitle>
             </DialogHeader>
             
-            <div className="grid gap-4 py-4">
-              <div className="space-y-2">
-                <label htmlFor="memoryTitle" className="text-sm font-medium">Title</label>
-                <Input 
-                  id="memoryTitle" 
-                  value={newMemory.title} 
-                  onChange={(e) => setNewMemory({...newMemory, title: e.target.value})}
-                  placeholder="Enter a title for this memory"
-                  required
-                />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 py-4">
+              {/* Left Column - Form Fields */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="memoryTitle" className="text-sm font-medium">Title</label>
+                  <Input 
+                    id="memoryTitle" 
+                    value={newMemory.title} 
+                    onChange={(e) => setNewMemory({...newMemory, title: e.target.value})}
+                    placeholder="Enter a title for this memory"
+                    required
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label htmlFor="memoryDate" className="text-sm font-medium">Date</label>
+                    <Input 
+                      id="memoryDate" 
+                      type="date" 
+                      value={newMemory.date} 
+                      onChange={(e) => setNewMemory({...newMemory, date: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="memoryLocation" className="text-sm font-medium">Location</label>
+                    <Input 
+                      id="memoryLocation" 
+                      value={newMemory.location} 
+                      onChange={(e) => setNewMemory({...newMemory, location: e.target.value})}
+                      placeholder="Where did this memory take place?"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="memoryDescription" className="text-sm font-medium">Description</label>
+                  <Textarea 
+                    id="memoryDescription" 
+                    value={newMemory.description} 
+                    onChange={(e) => setNewMemory({...newMemory, description: e.target.value})}
+                    placeholder="Tell the story behind this memory..."
+                    rows={4}
+                    className="resize-none"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="memoryTags" className="text-sm font-medium">Tags</label>
+                  <Input 
+                    id="memoryTags" 
+                    value={newMemory.tags} 
+                    onChange={(e) => setNewMemory({...newMemory, tags: e.target.value})}
+                    placeholder="Tags separated by commas (e.g. vacation, beach, sunset)"
+                  />
+                </div>
               </div>
               
-              <div className="space-y-2">
-                <label htmlFor="memoryDate" className="text-sm font-medium">Date</label>
-                <Input 
-                  id="memoryDate" 
-                  type="date" 
-                  value={newMemory.date} 
-                  onChange={(e) => setNewMemory({...newMemory, date: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="memoryLocation" className="text-sm font-medium">Location</label>
-                <Input 
-                  id="memoryLocation" 
-                  value={newMemory.location} 
-                  onChange={(e) => setNewMemory({...newMemory, location: e.target.value})}
-                  placeholder="Where did this memory take place?"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="memoryDescription" className="text-sm font-medium">Description</label>
-                <Textarea 
-                  id="memoryDescription" 
-                  value={newMemory.description} 
-                  onChange={(e) => setNewMemory({...newMemory, description: e.target.value})}
-                  placeholder="Tell the story behind this memory..."
-                  rows={3}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="memoryTags" className="text-sm font-medium">Tags</label>
-                <Input 
-                  id="memoryTags" 
-                  value={newMemory.tags} 
-                  onChange={(e) => setNewMemory({...newMemory, tags: e.target.value})}
-                  placeholder="Tags separated by commas (e.g. vacation, beach, sunset)"
-                />
-              </div>
-              
+              {/* Right Column - Image Upload */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Photo</label>
-                <ImageUpload
-                  onImageUploaded={handleMemoryImageUpload}
-                  height={200}
-                  width={400}
-                  caption="Upload Image"
-                  editMode={true}
-                />
+                <div className="flex items-center justify-center h-full min-h-[300px]">
+                  <ImageUpload
+                    onImageUploaded={handleMemoryImageUpload}
+                    height={280}
+                    width={400}
+                    caption="Upload Image"
+                    editMode={true}
+                  />
+                </div>
               </div>
             </div>
             
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 pt-4 border-t">
               <Button variant="outline" onClick={() => setOpenMemoryDialog(false)}>
                 Cancel
               </Button>
