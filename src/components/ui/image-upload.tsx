@@ -132,13 +132,15 @@ export default function ImageUpload({
             className="object-cover rounded-md"
           />
           {editMode && (
-            <button
-              onClick={handleRemoveImage}
-              className="absolute top-2 right-2 bg-white/80 p-1 rounded-full"
-              aria-label="Remove image"
-            >
-              <X size={18} />
-            </button>
+            <div className="absolute top-2 right-2 flex gap-1">
+              <button
+                onClick={handleRemoveImage}
+                className="bg-red-500/80 hover:bg-red-500 text-white p-1 rounded-full transition-colors"
+                aria-label="Remove image"
+              >
+                <X size={18} />
+              </button>
+            </div>
           )}
         </div>
       ) : (

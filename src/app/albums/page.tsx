@@ -7,7 +7,7 @@ import AuthWrapper from "@/components/AuthWrapper"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Pen, Trash2, Plus, Image as ImageIcon, Calendar, MapPin, Tag, Loader2 } from "lucide-react"
+import { Pen, Trash2, Plus, Image as ImageIcon, Calendar, MapPin, Tag, Loader2, X } from "lucide-react"
 import EditableContent from "@/components/ui/editable-content"
 import DeleteButton from "@/components/ui/delete-button"
 import ImageUpload from "@/components/ui/image-upload"
@@ -46,6 +46,8 @@ function AlbumsContent() {
   const [activeTab, setActiveTab] = useState<string | null>(null)
   const [openMemoryDialog, setOpenMemoryDialog] = useState(false)
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
+  const [editingAlbumCover, setEditingAlbumCover] = useState<string | null>(null)
+  const [editingMemoryImage, setEditingMemoryImage] = useState<string | null>(null)
   const [newMemory, setNewMemory] = useState({
     title: "",
     description: "",
@@ -164,6 +166,7 @@ function AlbumsContent() {
   }
 
   const handleMemoryImageUpload = (url: string) => {
+    console.log('Memory image uploaded:', url);
     setNewMemory(prev => ({
       ...prev,
       images: [url]
@@ -174,6 +177,15 @@ function AlbumsContent() {
     if (!selectedAlbum) return
     
     try {
+      console.log('Creating memory with data:', {
+        title: newMemory.title,
+        description: newMemory.description,
+        date: newMemory.date,
+        images: newMemory.images.filter(img => img),
+        location: newMemory.location,
+        tags: newMemory.tags ? newMemory.tags.split(',').map(tag => tag.trim()) : []
+      });
+      
       // Create the memory
       const response = await api.createMemory({
         title: newMemory.title,
@@ -183,6 +195,8 @@ function AlbumsContent() {
         location: newMemory.location,
         tags: newMemory.tags ? newMemory.tags.split(',').map(tag => tag.trim()) : []
       })
+      
+      console.log('Memory creation response:', response);
       
       const createdMemory = (response as any).memory
       
@@ -308,7 +322,10 @@ function AlbumsContent() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {memories.map((memory) => (
           <Card key={memory._id} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
-            <div className="relative aspect-[3/2]">
+            <div 
+              className="relative aspect-[3/2] cursor-pointer group"
+              onClick={() => setEditingMemoryImage(editingMemoryImage === memory._id ? null : memory._id)}
+            >
               {memory.images && memory.images[0] ? (
                 <Image
                   src={memory.images[0]}
@@ -319,6 +336,45 @@ function AlbumsContent() {
               ) : (
                 <div className="flex items-center justify-center h-full bg-muted">
                   <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                </div>
+              )}
+              
+              {/* Edit overlay - only show when hovering or editing */}
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div className="text-white text-sm font-medium">
+                  {editingMemoryImage === memory._id ? 'Cancel' : 'Change Photo'}
+                </div>
+              </div>
+              
+              {/* Image upload - only show when editing */}
+              {editingMemoryImage === memory._id && (
+                <div className="absolute inset-0 bg-white/90 flex items-center justify-center">
+                  <div className="relative">
+                    <button
+                      onClick={() => setEditingMemoryImage(null)}
+                      className="absolute -top-2 -right-2 bg-gray-500 hover:bg-gray-600 text-white p-1 rounded-full z-10"
+                      aria-label="Cancel editing"
+                    >
+                      <X size={16} />
+                    </button>
+                    <ImageUpload
+                      defaultImage={memory.images?.[0] || ''}
+                      onImageUploaded={(url) => {
+                        if (url === '') {
+                          // Handle image removal
+                          handleUpdateMemory(memory._id, { images: [] })
+                        } else {
+                          // Handle image upload
+                          handleUpdateMemory(memory._id, { images: [url] })
+                        }
+                        setEditingMemoryImage(null)
+                      }}
+                      height={180}
+                      width={300}
+                      caption="Upload Photo"
+                      editMode={true}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -424,7 +480,10 @@ function AlbumsContent() {
               {/* Album Details */}
               <div className="w-full md:w-1/3">
                 <Card className="h-full">
-                  <div className="relative aspect-square">
+                  <div 
+                    className="relative aspect-square cursor-pointer group"
+                    onClick={() => setEditingAlbumCover(editingAlbumCover === album._id ? null : album._id)}
+                  >
                     {album.coverImage ? (
                       <Image
                         src={album.coverImage}
@@ -438,15 +497,43 @@ function AlbumsContent() {
                       </div>
                     )}
                     
-                    <div className="absolute bottom-2 right-2">
-                      <ImageUpload
-                        defaultImage={album.coverImage}
-                        onImageUploaded={(url) => handleUpdateAlbum(album._id, { coverImage: url })}
-                        height={100}
-                        width={100}
-                        caption="Change Cover"
-                      />
+                    {/* Edit overlay - only show when hovering or editing */}
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="text-white text-sm font-medium">
+                        {editingAlbumCover === album._id ? 'Cancel' : 'Change Cover'}
+                      </div>
                     </div>
+                            {/* Image upload - only show when editing */}
+              {editingAlbumCover === album._id && (
+                <div className="absolute inset-0 bg-white/90 flex items-center justify-center">
+                  <div className="relative">
+                    <button
+                      onClick={() => setEditingAlbumCover(null)}
+                      className="absolute -top-2 -right-2 bg-gray-500 hover:bg-gray-600 text-white p-1 rounded-full z-10"
+                      aria-label="Cancel editing"
+                    >
+                      <X size={16} />
+                    </button>
+                    <ImageUpload
+                      defaultImage={album.coverImage}
+                      onImageUploaded={(url) => {
+                        if (url === '') {
+                          // Handle image removal
+                          handleUpdateAlbum(album._id, { coverImage: '' })
+                        } else {
+                          // Handle image upload
+                          handleUpdateAlbum(album._id, { coverImage: url })
+                        }
+                        setEditingAlbumCover(null)
+                      }}
+                      height={200}
+                      width={200}
+                      caption="Upload Cover"
+                      editMode={true}
+                    />
+                  </div>
+                </div>
+              )}
                   </div>
                   
                   <CardContent className="pt-4">
@@ -596,6 +683,7 @@ function AlbumsContent() {
                   height={200}
                   width={400}
                   caption="Upload Image"
+                  editMode={true}
                 />
               </div>
             </div>

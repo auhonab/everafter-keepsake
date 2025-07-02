@@ -146,6 +146,7 @@ export default function NewEntryCard({
                 height={200}
                 width={400}
                 caption="Add Image"
+                editMode={true}
               />
             </div>
           )}
