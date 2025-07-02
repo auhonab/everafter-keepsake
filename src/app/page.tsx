@@ -1,167 +1,95 @@
-import Image from "next/image"
 import Link from "next/link"
-import { 
-  Heart, 
-  Calendar, 
-  Camera, 
-  BookOpen, 
-  MessageCircle, 
-  MapPin, 
-  Gift 
-} from "lucide-react"
-import Header from "@/components/common/Header"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import ImageGallery from "@/components/ui/image-gallery"
-import PoemGenerator from "@/components/PoemGenerator"
+import { Heart } from "lucide-react"
 
-export default function Home() {
-  const heroImages = [
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Couple smiling together",
-      dataHint: "couple smiling"
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Romantic dinner date",
-      dataHint: "romantic dinner"
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Walking together in nature", 
-      dataHint: "couple walking in nature"
-    }
-  ]
-
-  const features = [
-    {
-      icon: Calendar,
-      title: "Timeline",
-      description: "Chronicle your journey together with meaningful milestones and memories",
-      href: "/timeline"
-    },
-    {
-      icon: Camera,
-      title: "Photo Albums",
-      description: "Organize and cherish your favorite moments in beautiful digital albums",
-      href: "/albums"
-    },
-    {
-      icon: MessageCircle,
-      title: "Love Notes",
-      description: "Exchange and save heartfelt messages and letters for each other",
-      href: "/love-notes"
-    },
-    {
-      icon: MapPin,
-      title: "Memory Map",
-      description: "Mark the locations that hold special meaning in your relationship",
-      href: "/memory-map"
-    },
-    {
-      icon: BookOpen,
-      title: "Our Journal",
-      description: "Write and preserve your thoughts, feelings, and shared experiences",
-      href: "/journal"
-    },
-    {
-      icon: Gift,
-      title: "Countdowns",
-      description: "Keep track of anniversaries, special dates, and upcoming celebrations",
-      href: "/countdowns"
-    }
-  ]
-
+export default function WelcomePage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+      {/* Vintage Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-25 via-rose-25 to-orange-25" />
       
-      <main className="space-y-0">
-        {/* Hero Section */}
-        <section className="py-20 px-4">
-          <div className="container mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Left Column - Welcome Text */}
-              <div className="space-y-6">
-                <h1 className="text-5xl lg:text-6xl font-headline font-bold text-foreground leading-tight tracking-tight">
-                  Our Story, Our Sanctuary
-                </h1>
-                <p className="text-lg text-muted-foreground leading-relaxed max-w-md font-body">
-                  A digital keepsake where love stories live forever. Capture, preserve, and celebrate 
-                  the beautiful moments that make your relationship unique.
-                </p>
-              </div>
-              
-              {/* Right Column - Image Gallery */}
-              <div className="relative">
-                <ImageGallery images={heroImages} />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-20 px-4 bg-muted/30">
-          <div className="container mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-headline font-bold text-foreground mb-4">
-                Explore Our Keepsakes
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-body">
-                Discover all the ways you can capture, organize, and celebrate your love story
-              </p>
-            </div>
+      {/* Vintage Rose Pattern Background */}
+      <div 
+        className="absolute inset-0 opacity-40"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23d4a574' stroke-width='0.5' opacity='0.3'%3E%3Ccircle cx='20' cy='20' r='8' fill='%23f4a5a5' opacity='0.2'/%3E%3Cpath d='M20 12 Q24 16 20 20 Q16 16 20 12' fill='%23f4a5a5' opacity='0.3'/%3E%3Cpath d='M12 20 Q16 16 20 20 Q16 24 12 20' fill='%23f4a5a5' opacity='0.3'/%3E%3Cpath d='M20 28 Q16 24 20 20 Q24 24 20 28' fill='%23f4a5a5' opacity='0.3'/%3E%3Cpath d='M28 20 Q24 24 20 20 Q24 16 28 20' fill='%23f4a5a5' opacity='0.3'/%3E%3Ccircle cx='80' cy='30' r='6' fill='%23f4a5a5' opacity='0.15'/%3E%3Cpath d='M80 24 Q83 27 80 30 Q77 27 80 24' fill='%23f4a5a5' opacity='0.25'/%3E%3Ccircle cx='30' cy='80' r='7' fill='%23f4a5a5' opacity='0.2'/%3E%3Cpath d='M30 73 Q34 77 30 80 Q26 77 30 73' fill='%23f4a5a5' opacity='0.3'/%3E%3Ccircle cx='70' cy='70' r='5' fill='%23f4a5a5' opacity='0.18'/%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundSize: '200px 200px'
+        }}
+      />
+      
+      {/* Vintage Paper Texture */}
+      <div 
+        className="absolute inset-0 opacity-25"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4a574' fill-opacity='0.15'%3E%3Ccircle cx='2' cy='2' r='0.5'/%3E%3Ccircle cx='32' cy='2' r='0.5'/%3E%3Ccircle cx='17' cy='17' r='0.5'/%3E%3Ccircle cx='47' cy='17' r='0.5'/%3E%3Ccircle cx='12' cy='32' r='0.5'/%3E%3Ccircle cx='42' cy='32' r='0.5'/%3E%3Ccircle cx='27' cy='47' r='0.5'/%3E%3Ccircle cx='57' cy='47' r='0.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
+      
+      {/* Floating Elements */}
+      <div className="absolute top-20 left-20 opacity-50 text-rose-600">
+        <Heart className="w-6 h-6 animate-pulse" />
+      </div>
+      <div className="absolute top-40 right-32 opacity-45 text-amber-600">
+        <Heart className="w-4 h-4 animate-pulse delay-1000" />
+      </div>
+      <div className="absolute bottom-32 left-32 opacity-55 text-orange-600">
+        <Heart className="w-5 h-5 animate-pulse delay-2000" />
+      </div>
+      <div className="absolute bottom-20 right-20 opacity-50 text-pink-600">
+        <Heart className="w-3 h-3 animate-pulse delay-500" />
+      </div>
+      
+      {/* Main Content */}
+      <div className="relative z-10 text-center px-8 max-w-4xl mx-auto">
+        {/* Title with Heart Icon */}
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <Heart className="w-12 h-12 text-rose-600 fill-rose-600/30" />
+          <h1 className="text-5xl md:text-7xl font-script font-bold text-amber-900 leading-tight">
+            EverAfter Keepsake
+          </h1>
+          <Heart className="w-12 h-12 text-rose-600 fill-rose-600/30" />
+        </div>
+        
+        {/* Main Description */}
+        <p className="text-xl md:text-2xl text-amber-800 font-body leading-relaxed mb-6 max-w-3xl mx-auto font-medium">
+          This is a private sanctuary for our shared story. A place to preserve our most cherished memories, 
+          celebrate milestones, and watch our love story unfold.
+        </p>
+        
+        {/* Secondary Description */}
+        <p className="text-lg md:text-xl text-amber-700 font-body italic leading-relaxed mb-12 max-w-2xl mx-auto font-medium">
+          Every photo, every note, every moment—all kept safe, just for us.
+        </p>
+        
+        {/* Call to Action Button */}
+        <Link href="/home">
+          <button className="group relative px-12 py-4 bg-gradient-to-r from-rose-600 to-amber-600 text-amber-50 font-body font-semibold text-lg rounded-full shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+            {/* Button Background Animation */}
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-rose-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {features.map((feature, index) => {
-                const IconComponent = feature.icon
-                return (
-                  <Link key={index} href={feature.href}>
-                    <Card className="h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group">
-                      <CardHeader className="text-center">
-                        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                          <IconComponent className="h-6 w-6 text-primary" />
-                        </div>
-                        <CardTitle className="text-xl font-semibold font-body">
-                          {feature.title}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <CardDescription className="text-center">
-                          {feature.description}
-                        </CardDescription>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* AI Poem Generator Section */}
-        <section id="poem-generator" className="py-20 px-4">
-          <div className="container mx-auto text-center">
-            <div className="mb-8">
-              <Badge variant="secondary" className="mb-4">
-                Surprise Feature
-              </Badge>
-              <h2 className="text-4xl font-headline font-bold text-foreground mb-4">
-                AI Love Poem Generator
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-body">
-                Let artificial intelligence help you express your feelings with personalized love poems 
-                created just for your unique story.
-              </p>
-            </div>
-            
-            <div className="flex justify-center">
-              <PoemGenerator />
-            </div>
-          </div>
-        </section>
-      </main>
+            {/* Button Content */}
+            <span className="relative flex items-center gap-3">
+              Enter Our Sanctuary
+              <Heart className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+            </span>
+          </button>
+        </Link>
+        
+        {/* Decorative Quote */}
+        <div className="mt-16 opacity-80">
+          <p className="text-amber-800 font-script text-lg italic font-medium">
+            "Love is not just looking at each other, it's looking in the same direction."
+          </p>
+        </div>
+      </div>
+      
+      {/* Bottom Decorative Elements */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-50">
+        <div className="flex space-x-2">
+          <div className="w-2 h-2 bg-rose-600 rounded-full animate-pulse"></div>
+          <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse delay-200"></div>
+          <div className="w-2 h-2 bg-orange-600 rounded-full animate-pulse delay-400"></div>
+        </div>
+      </div>
     </div>
   )
 }
