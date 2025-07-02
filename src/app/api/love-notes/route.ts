@@ -86,17 +86,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Verify recipient exists
-    const recipient = await User.findById(recipientId)
-    if (!recipient) {
-      return NextResponse.json({ error: 'Recipient not found' }, { status: 404 })
+    // Handle special case for self-notes (demo)
+    let recipientUser = user;
+    if (recipientId !== "self") {
+      recipientUser = await User.findById(recipientId)
+      if (!recipientUser) {
+        return NextResponse.json({ error: 'Recipient not found' }, { status: 404 })
+      }
     }
 
     const note = new LoveNote({
       title,
       content,
       sender: user._id,
-      recipient: recipientId,
+      recipient: recipientUser._id,
       scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
       style: style || 'romantic',
     })

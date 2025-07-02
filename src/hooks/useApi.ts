@@ -52,6 +52,12 @@ export async function apiRequest<T>(
   options?: RequestInit
 ): Promise<T> {
   try {
+    // Add request debugging
+    console.log(`API Request: ${options?.method || 'GET'} ${url}`);
+    if (options?.body) {
+      console.log('Request body:', options.body);
+    }
+    
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -60,12 +66,24 @@ export async function apiRequest<T>(
       ...options,
     })
 
+    // Add response debugging
+    console.log(`API Response: ${response.status} ${response.statusText}`);
+    
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        errorMessage = errorData.error || errorMessage;
+      } catch (e) {
+        console.error('Could not parse error response as JSON');
+      }
+      throw new Error(errorMessage);
     }
 
-    return await response.json()
+    const data = await response.json();
+    console.log('Response data:', data);
+    return data
   } catch (error) {
     console.error('API request failed:', error)
     throw error
@@ -106,9 +124,17 @@ export const api = {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
     return apiRequest(`/api/journal${query}`)
   },
+  getJournalEntry: (id: string) => apiRequest(`/api/journal/${id}`),
   createJournalEntry: (data: any) => apiRequest('/api/journal', {
     method: 'POST',
     body: JSON.stringify(data),
+  }),
+  updateJournalEntry: (id: string, data: any) => apiRequest(`/api/journal/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  deleteJournalEntry: (id: string) => apiRequest(`/api/journal/${id}`, {
+    method: 'DELETE',
   }),
 
   // Love notes
@@ -116,9 +142,17 @@ export const api = {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
     return apiRequest(`/api/love-notes${query}`)
   },
+  getLoveNote: (id: string) => apiRequest(`/api/love-notes/${id}`),
   createLoveNote: (data: any) => apiRequest('/api/love-notes', {
     method: 'POST',
     body: JSON.stringify(data),
+  }),
+  updateLoveNote: (id: string, data: any) => apiRequest(`/api/love-notes/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  deleteLoveNote: (id: string) => apiRequest(`/api/love-notes/${id}`, {
+    method: 'DELETE',
   }),
 
   // Albums
@@ -126,9 +160,17 @@ export const api = {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
     return apiRequest(`/api/albums${query}`)
   },
+  getAlbum: (id: string) => apiRequest(`/api/albums/${id}`),
   createAlbum: (data: any) => apiRequest('/api/albums', {
     method: 'POST',
     body: JSON.stringify(data),
+  }),
+  updateAlbum: (id: string, data: any) => apiRequest(`/api/albums/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  deleteAlbum: (id: string) => apiRequest(`/api/albums/${id}`, {
+    method: 'DELETE',
   }),
 
   // Milestones
@@ -136,9 +178,17 @@ export const api = {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
     return apiRequest(`/api/milestones${query}`)
   },
+  getMilestone: (id: string) => apiRequest(`/api/milestones/${id}`),
   createMilestone: (data: any) => apiRequest('/api/milestones', {
     method: 'POST',
     body: JSON.stringify(data),
+  }),
+  updateMilestone: (id: string, data: any) => apiRequest(`/api/milestones/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  deleteMilestone: (id: string) => apiRequest(`/api/milestones/${id}`, {
+    method: 'DELETE',
   }),
 
   // Test database connection

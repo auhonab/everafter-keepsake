@@ -1,55 +1,196 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Header from "@/components/common/Header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   Heart, 
-  Plane, 
   Star, 
   Calendar,
-  MapPin,
-  Camera,
   Gift,
-  Home
+  Cake,
+  Diamond,
+  Sparkles,
+  Plus,
+  Loader2
 } from "lucide-react"
+import { api } from "@/hooks/useApi"
+import { useToast } from "@/hooks/use-toast"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import EditableContent from "@/components/ui/editable-content"
+import DeleteButton from "@/components/ui/delete-button"
+import { formatDate } from "@/lib/utils"
+
+interface Milestone {
+  _id: string
+  title: string
+  description?: string
+  date: string
+  type: 'anniversary' | 'first_date' | 'engagement' | 'wedding' | 'birthday' | 'custom'
+  location?: string
+  isRecurring: boolean
+  createdAt: string
+}
+
+// Map milestone types to icons
+const typeToIcon = {
+  anniversary: Heart,
+  first_date: Star,
+  engagement: Diamond,
+  wedding: Gift,
+  birthday: Cake,
+  custom: Sparkles
+}
 
 export default function Timeline() {
-  const timelineEvents = [
-    {
-      icon: Heart,
-      date: "March 15, 2020",
-      title: "The Beginning",
-      description: "Our eyes met across the crowded coffee shop, and in that moment, everything changed. What started as a chance encounter became the foundation of our beautiful love story."
-    },
-    {
-      icon: Plane,
-      date: "August 22, 2020", 
-      title: "First Vacation",
-      description: "Our first trip together to the mountains. We discovered our shared love for adventure, watched the sunrise from the peak, and knew we wanted to explore the world together."
-    },
-    {
-      icon: Star,
-      date: "March 15, 2021",
-      title: "One Year Anniversary",
-      description: "Celebrating our first year together with a romantic dinner under the stars. We exchanged promises and realized that this was just the beginning of our journey."
-    },
-    {
-      icon: Home,
-      date: "June 10, 2022",
-      title: "Moving In Together",
-      description: "The day we officially made our home together. Boxes everywhere, but our hearts were full knowing we were starting this new chapter as a team."
-    },
-    {
-      icon: Gift,
-      date: "December 24, 2022",
-      title: "First Christmas",
-      description: "Our first Christmas in our own home. Creating new traditions, exchanging meaningful gifts, and realizing how perfectly our lives fit together."
-    },
-    {
-      icon: Camera,
-      date: "Present Day",
-      title: "Our Story Continues",
-      description: "Every day brings new memories, deeper love, and endless possibilities. This timeline captures our past, but our future is still being written together."
+  const [milestones, setMilestones] = useState<Milestone[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [openDialog, setOpenDialog] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [newMilestone, setNewMilestone] = useState({
+    title: "",
+    description: "",
+    date: new Date().toISOString().split('T')[0],
+    type: "custom" as const,
+    location: "",
+    isRecurring: false
+  })
+
+  const { toast } = useToast()
+  
+  useEffect(() => {
+    loadMilestones()
+  }, [])
+  
+  const loadMilestones = async () => {
+    try {
+      setIsLoading(true)
+      const response = await api.getMilestones()
+      const fetchedMilestones = (response as any).milestones || []
+      
+      // Filter out countdowns from timeline (they should only appear in countdowns page)
+      const timelineMilestones = fetchedMilestones.filter((milestone: any) => 
+        !milestone.title || !milestone.title.startsWith('[COUNTDOWN]')
+      )
+      
+      // Sort milestones by date
+      const sortedMilestones = [...timelineMilestones].sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime()
+      })
+      
+      setMilestones(sortedMilestones)
+    } catch (error) {
+      console.error('Error loading milestones:', error)
+      toast({
+        title: "Error loading timeline",
+        description: "Please try again later",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
     }
-  ]
+  }
+  
+  const handleCreateMilestone = async () => {
+    try {
+      setIsSaving(true)
+      const response = await api.createMilestone({
+        title: newMilestone.title,
+        description: newMilestone.description,
+        date: newMilestone.date,
+        type: newMilestone.type,
+        location: newMilestone.location,
+        isRecurring: newMilestone.isRecurring
+      })
+      
+      const createdMilestone = (response as any).milestone
+      
+      // Add the new milestone and re-sort
+      const updatedMilestones = [...milestones, createdMilestone].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      )
+      
+      setMilestones(updatedMilestones)
+      setOpenDialog(false)
+      
+      // Reset form
+      setNewMilestone({
+        title: "",
+        description: "",
+        date: new Date().toISOString().split('T')[0],
+        type: "custom",
+        location: "",
+        isRecurring: false
+      })
+      
+      toast({
+        title: "Milestone added",
+        description: "Your milestone has been added to the timeline",
+      })
+    } catch (error) {
+      console.error('Error creating milestone:', error)
+      toast({
+        title: "Error adding milestone",
+        description: "Please try again later",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+  
+  const handleUpdateMilestone = async (id: string, data: any) => {
+    try {
+      const response = await api.updateMilestone(id, data)
+      
+      setMilestones(milestones.map(milestone => 
+        milestone._id === id ? (response as any).milestone : milestone
+      ))
+      
+      toast({
+        title: "Milestone updated",
+        description: "Your changes have been saved",
+      })
+    } catch (error) {
+      console.error('Error updating milestone:', error)
+      toast({
+        title: "Error updating milestone",
+        description: "Please try again later",
+        variant: "destructive",
+      })
+    }
+  }
+  
+  const handleDeleteMilestone = async (id: string) => {
+    try {
+      await api.deleteMilestone(id)
+      
+      setMilestones(milestones.filter(milestone => milestone._id !== id))
+      
+      toast({
+        title: "Milestone deleted",
+        description: "Your milestone has been removed",
+      })
+    } catch (error) {
+      console.error('Error deleting milestone:', error)
+      toast({
+        title: "Error deleting milestone",
+        description: "Please try again later",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Image uploads have been removed for milestones
+  
+  const getMilestoneIcon = (type: keyof typeof typeToIcon) => {
+    const IconComponent = typeToIcon[type] || Sparkles
+    return IconComponent
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -57,13 +198,25 @@ export default function Timeline() {
       
       <main className="container mx-auto max-w-4xl px-4 py-12">
         {/* Page Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h1 className="text-5xl font-headline font-bold text-foreground mb-4">
             Our Timeline
           </h1>
           <p className="text-lg text-muted-foreground font-body max-w-2xl mx-auto">
             A look back at the moments that made us.
           </p>
+        </div>
+
+        {/* Add Milestone Button */}
+        <div className="flex justify-center mb-12">
+          <Button 
+            onClick={() => setOpenDialog(true)}
+            className="gap-2"
+            size="lg"
+          >
+            <Plus className="h-5 w-5" />
+            Add Milestone
+          </Button>
         </div>
 
         {/* Timeline Container */}
@@ -75,57 +228,238 @@ export default function Timeline() {
           <div className="absolute left-8 top-0 h-full w-0.5 bg-accent md:hidden"></div>
           
           {/* Timeline Events */}
-          <div className="space-y-12">
-            {timelineEvents.map((event, index) => {
-              const IconComponent = event.icon
-              const isEven = index % 2 === 0
-              
-              return (
-                <div key={index} className="relative">
-                  {/* Event Card */}
-                  <div className={`flex ${isEven ? 'justify-start' : 'justify-end'} md:flex ${isEven ? 'md:justify-start' : 'md:justify-end'} justify-start`}>
-                    <div className={`w-full md:w-5/12 ${isEven ? 'md:pr-8' : 'md:pl-8'} pl-16 md:pl-0`}>
-                      <Card className="hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer">
-                        <CardHeader className={`${isEven ? 'md:text-left' : 'md:text-right'} text-left`}>
-                          <p className="text-sm text-muted-foreground font-body mb-2">
-                            {event.date}
-                          </p>
-                          <CardTitle className="text-2xl font-headline text-foreground">
-                            {event.title}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className={`${isEven ? 'md:text-left' : 'md:text-right'} text-left`}>
-                          <p className="text-muted-foreground font-body leading-relaxed">
-                            {event.description}
-                          </p>
-                        </CardContent>
-                      </Card>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 text-primary animate-spin mr-2" />
+              <span>Loading your timeline...</span>
+            </div>
+          ) : milestones.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Calendar className="h-16 w-16 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground text-lg">No milestones yet. Add your first milestone to start your timeline!</p>
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {milestones.map((milestone, index) => {
+                const IconComponent = getMilestoneIcon(milestone.type)
+                const isEven = index % 2 === 0
+                
+                return (
+                  <div key={milestone._id} className="relative">
+                    {/* Event Card */}
+                    <div className={`flex ${isEven ? 'justify-start' : 'justify-end'} md:flex ${isEven ? 'md:justify-start' : 'md:justify-end'} justify-start`}>
+                      <div className={`w-full md:w-5/12 ${isEven ? 'md:pr-8' : 'md:pl-8'} pl-16 md:pl-0`}>
+                        <Card className="overflow-hidden transition-all duration-300">
+                          
+                          <CardHeader className={`${isEven ? 'md:text-left' : 'md:text-right'} text-left flex flex-row items-start justify-between`}>
+                            <div>
+                              <div className="text-sm text-muted-foreground font-body mb-2">
+                                <EditableContent
+                                  type="text"
+                                  value={(() => {
+                                    try {
+                                      // Handle the date properly to avoid timezone issues
+                                      const dateStr = milestone.date
+                                      if (dateStr.includes('T')) {
+                                        // If it already has time, use as is
+                                        return new Date(dateStr).toLocaleDateString('en-US', { 
+                                          year: 'numeric', 
+                                          month: 'long', 
+                                          day: 'numeric'
+                                        })
+                                      } else {
+                                        // If it's just a date (YYYY-MM-DD), treat it as local date
+                                        const [year, month, day] = dateStr.split('-').map(Number)
+                                        return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+                                          year: 'numeric', 
+                                          month: 'long', 
+                                          day: 'numeric'
+                                        })
+                                      }
+                                    } catch (error) {
+                                      console.error('Date parsing error:', error)
+                                      return milestone.date
+                                    }
+                                  })()}
+                                  onSave={(value) => {
+                                    // Convert date format for API
+                                    const dateObj = new Date(String(value))
+                                    if (!isNaN(dateObj.getTime())) {
+                                      handleUpdateMilestone(
+                                        milestone._id, 
+                                        { date: dateObj.toISOString().split('T')[0] }
+                                      )
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <CardTitle className="text-2xl font-headline text-foreground">
+                                <EditableContent
+                                  type="title"
+                                  value={milestone.title}
+                                  onSave={(value) => handleUpdateMilestone(milestone._id, { title: String(value) })}
+                                  className="card-title"
+                                />
+                              </CardTitle>
+                              {milestone.location && (
+                                <div className="text-xs text-muted-foreground mt-2 flex items-center">
+                                  <span className="mr-1">📍</span>
+                                  <EditableContent
+                                    type="text"
+                                    value={milestone.location}
+                                    onSave={(value) => handleUpdateMilestone(milestone._id, { location: String(value) })}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                            <DeleteButton 
+                              onDelete={async () => await handleDeleteMilestone(milestone._id)}
+                              size="sm"
+                            />
+                          </CardHeader>
+                          <CardContent className={`${isEven ? 'md:text-left' : 'md:text-right'} text-left`}>
+                            <EditableContent
+                              type="textarea"
+                              value={milestone.description || ""}
+                              onSave={(value) => handleUpdateMilestone(milestone._id, { description: String(value) })}
+                              className="text-muted-foreground font-body leading-relaxed"
+                              placeholder="Add a description for this milestone..."
+                            />
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+                    
+                    {/* Central Icon - Desktop */}
+                    <div className="absolute left-1/2 top-8 transform -translate-x-1/2 -translate-y-1/2 hidden md:block z-10">
+                      <div className="w-12 h-12 rounded-full bg-accent border-4 border-background flex items-center justify-center shadow-lg">
+                        <IconComponent className="h-6 w-6 text-accent-foreground" />
+                      </div>
+                    </div>
+                    
+                    {/* Side Icon - Mobile */}
+                    <div className="absolute left-8 top-8 transform -translate-x-1/2 -translate-y-1/2 md:hidden z-10">
+                      <div className="w-12 h-12 rounded-full bg-accent border-4 border-background flex items-center justify-center shadow-lg">
+                        <IconComponent className="h-6 w-6 text-accent-foreground" />
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* Central Icon - Desktop */}
-                  <div className="absolute left-1/2 top-8 transform -translate-x-1/2 -translate-y-1/2 hidden md:block z-10">
-                    <div className="w-12 h-12 rounded-full bg-accent border-4 border-background flex items-center justify-center shadow-lg">
-                      <IconComponent className="h-6 w-6 text-accent-foreground" />
-                    </div>
-                  </div>
-                  
-                  {/* Side Icon - Mobile */}
-                  <div className="absolute left-8 top-8 transform -translate-x-1/2 -translate-y-1/2 md:hidden z-10">
-                    <div className="w-12 h-12 rounded-full bg-accent border-4 border-background flex items-center justify-center shadow-lg">
-                      <IconComponent className="h-6 w-6 text-accent-foreground" />
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+          )}
           
           {/* End cap for the timeline */}
-          <div className="absolute left-1/2 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 hidden md:block"></div>
-          <div className="absolute left-8 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 md:hidden"></div>
+          {milestones.length > 0 && (
+            <>
+              <div className="absolute left-1/2 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 hidden md:block"></div>
+              <div className="absolute left-8 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 md:hidden"></div>
+            </>
+          )}
         </div>
       </main>
+      
+      {/* Add Milestone Dialog */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>Add New Milestone</DialogTitle>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="milestoneTitle" className="text-sm font-medium">Title</label>
+              <Input 
+                id="milestoneTitle" 
+                value={newMilestone.title} 
+                onChange={(e) => setNewMilestone({...newMilestone, title: e.target.value})}
+                placeholder="Enter a title for this milestone"
+                required
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="milestoneDate" className="text-sm font-medium">Date</label>
+                <Input 
+                  id="milestoneDate" 
+                  type="date" 
+                  value={newMilestone.date} 
+                  onChange={(e) => setNewMilestone({...newMilestone, date: e.target.value})}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="milestoneType" className="text-sm font-medium">Type</label>
+                <Select 
+                  value={newMilestone.type}
+                  onValueChange={(value: any) => setNewMilestone({...newMilestone, type: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="anniversary">Anniversary</SelectItem>
+                    <SelectItem value="first_date">First Date</SelectItem>
+                    <SelectItem value="engagement">Engagement</SelectItem>
+                    <SelectItem value="wedding">Wedding</SelectItem>
+                    <SelectItem value="birthday">Birthday</SelectItem>
+                    <SelectItem value="custom">Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="milestoneLocation" className="text-sm font-medium">Location</label>
+              <Input 
+                id="milestoneLocation" 
+                value={newMilestone.location} 
+                onChange={(e) => setNewMilestone({...newMilestone, location: e.target.value})}
+                placeholder="Where did this milestone take place?"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="milestoneDescription" className="text-sm font-medium">Description</label>
+              <Textarea 
+                id="milestoneDescription" 
+                value={newMilestone.description} 
+                onChange={(e) => setNewMilestone({...newMilestone, description: e.target.value})}
+                placeholder="Tell the story of this milestone..."
+                rows={3}
+              />
+            </div>
+            
+            {/* Image upload removed */}
+            
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="isRecurring"
+                checked={newMilestone.isRecurring}
+                onChange={(e) => setNewMilestone({...newMilestone, isRecurring: e.target.checked})}
+                className="rounded"
+              />
+              <label htmlFor="isRecurring" className="text-sm">
+                This is a recurring annual event
+              </label>
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setOpenDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleCreateMilestone} 
+              disabled={isSaving || !newMilestone.title.trim() || !newMilestone.date}
+            >
+              {isSaving ? 'Saving...' : 'Add to Timeline'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

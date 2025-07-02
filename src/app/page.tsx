@@ -1,48 +1,14 @@
 import Link from "next/link"
 import { Heart } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function WelcomePage() {
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-background">
-      {/* Light mode background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-amber-25 via-rose-25 to-orange-25 dark:hidden" />
-      
-      {/* Dark mode background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900/20 to-rose-900/30 hidden dark:block" />
-      
-      {/* Light mode rose pattern */}
-      <div 
-        className="absolute inset-0 opacity-40 dark:hidden"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23d4a574' stroke-width='0.5' opacity='0.3'%3E%3Ccircle cx='20' cy='20' r='8' fill='%23f4a5a5' opacity='0.2'/%3E%3Cpath d='M20 12 Q24 16 20 20 Q16 16 20 12' fill='%23f4a5a5' opacity='0.3'/%3E%3Cpath d='M12 20 Q16 16 20 20 Q16 24 12 20' fill='%23f4a5a5' opacity='0.3'/%3E%3Cpath d='M20 28 Q16 24 20 20 Q24 24 20 28' fill='%23f4a5a5' opacity='0.3'/%3E%3Cpath d='M28 20 Q24 24 20 20 Q24 16 28 20' fill='%23f4a5a5' opacity='0.3'/%3E%3Ccircle cx='80' cy='30' r='6' fill='%23f4a5a5' opacity='0.15'/%3E%3Cpath d='M80 24 Q83 27 80 30 Q77 27 80 24' fill='%23f4a5a5' opacity='0.25'/%3E%3Ccircle cx='30' cy='80' r='7' fill='%23f4a5a5' opacity='0.2'/%3E%3Cpath d='M30 73 Q34 77 30 80 Q26 77 30 73' fill='%23f4a5a5' opacity='0.3'/%3E%3Ccircle cx='70' cy='70' r='5' fill='%23f4a5a5' opacity='0.18'/%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '200px 200px'
-        }}
-      />
-      
-      {/* Dark mode rose pattern */}
-      <div 
-        className="absolute inset-0 opacity-20 hidden dark:block"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%236B4F4F' stroke-width='0.5' opacity='0.4'%3E%3Ccircle cx='20' cy='20' r='8' fill='%238B6F6F' opacity='0.3'/%3E%3Cpath d='M20 12 Q24 16 20 20 Q16 16 20 12' fill='%238B6F6F' opacity='0.4'/%3E%3Cpath d='M12 20 Q16 16 20 20 Q16 24 12 20' fill='%238B6F6F' opacity='0.4'/%3E%3Cpath d='M20 28 Q16 24 20 20 Q24 24 20 28' fill='%238B6F6F' opacity='0.4'/%3E%3Cpath d='M28 20 Q24 24 20 20 Q24 16 28 20' fill='%238B6F6F' opacity='0.4'/%3E%3Ccircle cx='80' cy='30' r='6' fill='%238B6F6F' opacity='0.2'/%3E%3Cpath d='M80 24 Q83 27 80 30 Q77 27 80 24' fill='%238B6F6F' opacity='0.3'/%3E%3Ccircle cx='30' cy='80' r='7' fill='%238B6F6F' opacity='0.3'/%3E%3Cpath d='M30 73 Q34 77 30 80 Q26 77 30 73' fill='%238B6F6F' opacity='0.4'/%3E%3Ccircle cx='70' cy='70' r='5' fill='%238B6F6F' opacity='0.25'/%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '200px 200px'
-        }}
-      />
-      
-      {/* Light mode paper texture */}
-      <div 
-        className="absolute inset-0 opacity-25 dark:hidden"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4a574' fill-opacity='0.15'%3E%3Ccircle cx='2' cy='2' r='0.5'/%3E%3Ccircle cx='32' cy='2' r='0.5'/%3E%3Ccircle cx='17' cy='17' r='0.5'/%3E%3Ccircle cx='47' cy='17' r='0.5'/%3E%3Ccircle cx='12' cy='32' r='0.5'/%3E%3Ccircle cx='42' cy='32' r='0.5'/%3E%3Ccircle cx='27' cy='47' r='0.5'/%3E%3Ccircle cx='57' cy='47' r='0.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
-      
-      {/* Dark mode paper texture */}
-      <div 
-        className="absolute inset-0 opacity-15 hidden dark:block"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234A3535' fill-opacity='0.25'%3E%3Ccircle cx='2' cy='2' r='0.5'/%3E%3Ccircle cx='32' cy='2' r='0.5'/%3E%3Ccircle cx='17' cy='17' r='0.5'/%3E%3Ccircle cx='47' cy='17' r='0.5'/%3E%3Ccircle cx='12' cy='32' r='0.5'/%3E%3Ccircle cx='42' cy='32' r='0.5'/%3E%3Ccircle cx='27' cy='47' r='0.5'/%3E%3Ccircle cx='57' cy='47' r='0.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-background dark:bg-background">
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-20">
+        <ThemeToggle />
+      </div>
       
       {/* Floating Elements */}
       <div className="absolute top-20 left-20 opacity-50 text-rose-600 dark:text-rose-400">
@@ -58,6 +24,7 @@ export default function WelcomePage() {
         <Heart className="w-3 h-3 animate-pulse delay-500" />
       </div>
       
+      
       {/* Main Content */}
       <div className="relative z-10 text-center px-8 max-w-4xl mx-auto">
         {/* Title with Heart Icon */}
@@ -70,13 +37,14 @@ export default function WelcomePage() {
         </div>
         
         {/* Main Description */}
-        <p className="text-xl md:text-2xl text-amber-800 dark:text-amber-200 font-body leading-relaxed mb-6 max-w-3xl mx-auto font-medium">
+        <p className="text-xl md:text-2xl font script font-normal text-amber-900 dark:text-amber-200">
+
           This is a private sanctuary for our shared story. A place to preserve our most cherished memories, 
           celebrate milestones, and watch our love story unfold.
         </p>
         
         {/* Secondary Description */}
-        <p className="text-lg md:text-xl text-amber-700 dark:text-amber-300 font-body italic leading-relaxed mb-12 max-w-2xl mx-auto font-medium">
+        <p className="text-lg md:text-xl text-slate-700 dark:text-amber-300 font-body italic leading-relaxed mb-12 max-w-2xl mx-auto font-medium">
           Every photo, every note, every moment—all kept safe, just for us.
         </p>
         
@@ -96,7 +64,7 @@ export default function WelcomePage() {
         
         {/* Decorative Quote */}
         <div className="mt-16 opacity-80">
-          <p className="text-amber-800 dark:text-amber-200 font-script text-lg italic font-medium">
+          <p className="text-slate-700 dark:text-amber-200 font-script text-lg italic font-medium">
             "Love is not just looking at each other, it's looking in the same direction."
           </p>
         </div>

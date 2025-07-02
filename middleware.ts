@@ -1,19 +1,8 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+/**
+ * This file exists for compatibility with certain Next.js versions.
+ * The actual middleware implementation is in src/middleware.ts
+ */
 
-// Define public routes that don't require authentication
-const isPublicRoute = createRouteMatcher([
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-])
-
-export default clerkMiddleware(async (auth, req) => {
-  // Allow access to public routes
-  if (isPublicRoute(req)) return
-  
-  // Protect all other routes
-  await auth.protect()
-})
-
-export const config = {
-  matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
-}
+// Re-export from the src directory to ensure both files are identical
+export { default } from './src/middleware'
+export { config } from './src/middleware'

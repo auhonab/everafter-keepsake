@@ -19,7 +19,7 @@ export default function Header() {
         
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+          <Link href="/home" className="text-foreground hover:text-primary transition-colors font-medium">
             Home
           </Link>
           <Link href="/timeline" className="text-foreground hover:text-primary transition-colors font-medium">
@@ -48,7 +48,7 @@ export default function Header() {
           {user ? (
             <>
               <span className="text-muted-foreground font-body hidden sm:block">
-                Welcome, {user.firstName}!
+                Hi, {user.username || user.firstName || 'there'}!
               </span>
               <UserButton 
                 appearance={{

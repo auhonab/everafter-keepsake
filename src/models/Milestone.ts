@@ -5,7 +5,6 @@ export interface IMilestone extends mongoose.Document {
   description?: string
   date: Date
   type: 'anniversary' | 'first_date' | 'engagement' | 'wedding' | 'birthday' | 'custom'
-  image?: string
   location?: string
   userId: mongoose.Types.ObjectId
   isRecurring: boolean
@@ -29,9 +28,6 @@ const MilestoneSchema = new mongoose.Schema<IMilestone>({
     type: String,
     enum: ['anniversary', 'first_date', 'engagement', 'wedding', 'birthday', 'custom'],
     required: true,
-  },
-  image: {
-    type: String,
   },
   location: {
     type: String,

@@ -1,30 +1,125 @@
-import Image from "next/image"
+"use client"
+
+import { useState, useEffect } from "react"
+
 import Header from "@/components/common/Header"
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { InteractiveCard } from "@/components/ui/interactive-card"
-import { PenSquare } from "lucide-react"
+import { PenSquare, Heart, PlusCircle } from "lucide-react"
+import EditableContent from "@/components/ui/editable-content"
+import DeleteButton from "@/components/ui/delete-button"
+import NewEntryCard from "@/components/ui/new-entry-card"
+import { Button } from "@/components/ui/button"
+import { api } from "@/hooks/useApi"
+import { useToast } from "@/hooks/use-toast"
+
+interface LoveNote {
+  _id: string
+  title?: string
+  content: string
+  sender: any
+  recipient: any
+  isRead: boolean
+  scheduledFor?: string
+  style?: string
+  createdAt: string
+
+}
 
 export default function LoveNotes() {
-  const notes = [
-    {
-      type: "typed",
-      title: "A Typed Note",
-      content: "My dearest love, every morning I wake up grateful for another day to love you. Your laugh is my favorite sound, your smile my favorite sight. Thank you for being my person, my home, my everything. Forever yours.",
-      rotation: "-2deg"
-    },
-    {
-      type: "handwritten",
-      title: "Handwritten",
-      content: null,
-      rotation: "3deg"
-    },
-    {
-      type: "typed",
-      title: "Another Sweet Message",
-      content: "I love the way you steal the covers, leave coffee rings on the table, and sing off-key in the shower. I love your messy hair in the morning and the way you dance while cooking. I love all your perfect imperfections.",
-      rotation: "-1deg"
+  const [notes, setNotes] = useState<LoveNote[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const { toast } = useToast()
+  
+  useEffect(() => {
+    loadLoveNotes()
+  }, [])
+  
+  const loadLoveNotes = async () => {
+    try {
+      setIsLoading(true)
+      const response = await api.getLoveNotes()
+      setNotes((response as any).notes || [])
+    } catch (error) {
+      console.error('Error loading love notes:', error)
+      toast({
+        title: "Error loading love notes",
+        description: "Please try again later",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
     }
-  ]
+  }
+  
+  const handleCreateNote = async (data: { title?: string; content?: string }) => {
+    try {
+      // For demo purposes, create a note for the same user (self-note)
+      // In a real app, we'd get the partner's ID
+      const response = await api.createLoveNote({
+        title: data.title || "Love Note",
+        content: data.content || "",
+        recipientId: "self", // This will be handled specially in the API
+        style: "romantic",
+      })
+      
+      setNotes([(response as any).note, ...notes])
+      
+      toast({
+        title: "Love note sent",
+        description: "Your note has been delivered",
+      })
+    } catch (error) {
+      console.error('Error creating love note:', error)
+      toast({
+        title: "Error sending note",
+        description: "Please try again later",
+        variant: "destructive",
+      })
+    }
+  }
+  
+  const handleUpdateNote = async (id: string, data: any) => {
+    try {
+      const response = await api.updateLoveNote(id, data)
+      
+      setNotes(notes.map(note => 
+        note._id === id ? (response as any).note : note
+      ))
+      
+      toast({
+        title: "Note updated",
+        description: "Your changes have been saved",
+      })
+    } catch (error) {
+      console.error('Error updating love note:', error)
+      toast({
+        title: "Error updating note",
+        description: "Please try again later",
+        variant: "destructive",
+      })
+    }
+  }
+  
+  const handleDeleteNote = async (id: string) => {
+    try {
+      await api.deleteLoveNote(id)
+      
+      setNotes(notes.filter(note => note._id !== id))
+      
+      toast({
+        title: "Note deleted",
+        description: "Your note has been removed",
+      })
+    } catch (error) {
+      console.error('Error deleting love note:', error)
+      toast({
+        title: "Error deleting note",
+        description: "Please try again later",
+        variant: "destructive",
+      })
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -43,69 +138,68 @@ export default function LoveNotes() {
 
         {/* Notes Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {notes.map((note, index) => (
-            <InteractiveCard 
-              key={index} 
-              rotation={note.rotation}
-            >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl font-headline text-foreground">
-                  <PenSquare className="h-5 w-5 text-primary" />
-                  {note.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {note.type === "typed" ? (
-                  <p className="italic leading-relaxed text-muted-foreground font-body">
-                    {note.content}
-                  </p>
-                ) : (
-                  <div className="bg-muted/50 border border-border rounded-lg p-4">
-                    <div className="relative aspect-[3/2] w-full">
-                      <Image
-                        src="https://placehold.co/600x400.png"
-                        alt="Handwritten love letter"
-                        fill
-                        className="object-cover rounded"
-                        data-ai-hint="handwritten letter"
+          {/* New Note Card */}
+          <NewEntryCard 
+            onSubmit={handleCreateNote}
+            title="Write a Love Note"
+            includeContent={true}
+            includeImage={false}
+            buttonText="Send Note"
+          />
+          
+          {/* Love Notes */}
+          {isLoading ? (
+            <div className="col-span-3 text-center py-10">
+              <div className="animate-pulse">Loading love notes...</div>
+            </div>
+          ) : notes.length === 0 ? (
+            <div className="col-span-3 text-center py-10">
+              <p className="text-muted-foreground">No love notes yet. Write the first one!</p>
+            </div>
+          ) : (
+            notes.map((note) => (
+              <InteractiveCard 
+                key={note._id} 
+                rotation={Math.random() > 0.5 ? "2deg" : "-2deg"}
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <EditableContent
+                        type="title"
+                        value={note.title || "Love Note"}
+                        onSave={(newValue) => handleUpdateNote(note._id, { title: String(newValue) })}
+                        className="flex items-center gap-2 text-xl font-headline text-foreground"
                       />
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(note.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleUpdateNote(note._id, { isRead: !note.isRead })}
+                      >
+                        <Heart className={`h-4 w-4 ${note.isRead ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
+                      </Button>
+                      <DeleteButton onDelete={() => handleDeleteNote(note._id)} />
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </InteractiveCard>
-          ))}
-        </div>
-
-        {/* Additional scattered notes for visual appeal */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <InteractiveCard rotation="2deg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl font-headline text-foreground">
-                <PenSquare className="h-5 w-5 text-primary" />
-                Quick Reminder
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="italic leading-relaxed text-muted-foreground font-body">
-                Don't forget: You're amazing, you're loved, and you make my world brighter just by being in it. ❤️
-              </p>
-            </CardContent>
-          </InteractiveCard>
-
-          <InteractiveCard rotation="-3deg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl font-headline text-foreground">
-                <PenSquare className="h-5 w-5 text-primary" />
-                Future Plans
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="italic leading-relaxed text-muted-foreground font-body">
-                Can't wait to grow old with you, to see your face every morning for the rest of my life, and to write a million more love notes together.
-              </p>
-            </CardContent>
-          </InteractiveCard>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-4">
+                    <EditableContent
+                      type="textarea"
+                      value={note.content}
+                      onSave={(newValue) => handleUpdateNote(note._id, { content: String(newValue) })}
+                      className="italic leading-relaxed text-muted-foreground font-body"
+                    />
+                  </div>
+                </CardContent>
+              </InteractiveCard>
+            ))
+          )}
         </div>
       </main>
     </div>
