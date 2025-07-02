@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import dbConnect from '@/lib/mongodb'
 import { User, Memory, Album, JournalEntry, LoveNote, Milestone } from '@/models'

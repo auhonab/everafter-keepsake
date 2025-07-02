@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import dbConnect from '@/lib/mongodb'
-import { Album, User } from '@/models'
+import { Album } from '@/models'
 import { ensureUserExists } from '@/lib/ensureUser'
 
 export async function GET(request: NextRequest) {

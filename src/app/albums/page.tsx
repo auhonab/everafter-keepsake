@@ -1,21 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import Header from "@/components/common/Header"
 import AuthWrapper from "@/components/AuthWrapper"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Pen, Trash2, Plus, Image as ImageIcon, Calendar, MapPin, Tag, Loader2, X } from "lucide-react"
+import { Plus, Image as ImageIcon, Calendar, MapPin, X } from "lucide-react"
 import EditableContent from "@/components/ui/editable-content"
 import DeleteButton from "@/components/ui/delete-button"
 import ImageUpload from "@/components/ui/image-upload"
 import NewEntryCard from "@/components/ui/new-entry-card"
-import EditableCard from "@/components/ui/editable-card"
 import { api } from "@/hooks/useApi"
 import { useToast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { formatDate } from "@/lib/utils"
@@ -59,15 +58,11 @@ function AlbumsContent() {
 
   const { toast } = useToast()
   
-  useEffect(() => {
-    loadAlbums()
-  }, [])
-  
-  const loadAlbums = async () => {
+  const loadAlbums = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await api.getAlbums()
-      const fetchedAlbums = (response as any).albums || []
+      const fetchedAlbums = (response as { albums: Album[] }).albums || []
       setAlbums(fetchedAlbums)
       
       // Set the first album as active if we have any
@@ -84,7 +79,11 @@ function AlbumsContent() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [activeTab, toast])
+  
+  useEffect(() => {
+    loadAlbums()
+  }, [loadAlbums])
   
   const handleCreateAlbum = async (data: { title: string; content?: string; image?: string }) => {
     try {
@@ -94,7 +93,7 @@ function AlbumsContent() {
         coverImage: data.image
       })
       
-      const newAlbum = (response as any).album
+      const newAlbum = (response as { album: Album }).album
       setAlbums([...albums, newAlbum])
       setActiveTab(newAlbum._id)
       
@@ -112,12 +111,12 @@ function AlbumsContent() {
     }
   }
   
-  const handleUpdateAlbum = async (id: string, data: any) => {
+  const handleUpdateAlbum = async (id: string, data: Partial<Album>) => {
     try {
       const response = await api.updateAlbum(id, data)
       
       setAlbums(albums.map(album => 
-        album._id === id ? (response as any).album : album
+        album._id === id ? (response as { album: Album }).album : album
       ))
       
       toast({
@@ -198,7 +197,7 @@ function AlbumsContent() {
       
       console.log('Memory creation response:', response);
       
-      const createdMemory = (response as any).memory
+      const createdMemory = (response as { memory: Memory }).memory
       
       // Update the album to include this memory
       const albumResponse = await api.updateAlbum(selectedAlbum._id, {
@@ -207,7 +206,7 @@ function AlbumsContent() {
       
       // Update local state
       setAlbums(albums.map(album => 
-        album._id === selectedAlbum._id ? (albumResponse as any).album : album
+        album._id === selectedAlbum._id ? (albumResponse as { album: Album }).album : album
       ))
       
       // Reset form and close dialog
@@ -235,10 +234,10 @@ function AlbumsContent() {
     }
   }
 
-  const handleUpdateMemory = async (id: string, data: any) => {
+  const handleUpdateMemory = async (id: string, data: Partial<Memory>) => {
     try {
       const response = await api.updateMemory(id, data)
-      const updatedMemory = (response as any).memory
+      const updatedMemory = (response as { memory: Memory }).memory
       
       // Update the memory in its album
       setAlbums(albums.map(album => {

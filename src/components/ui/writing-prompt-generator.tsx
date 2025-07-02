@@ -106,7 +106,7 @@ export default function WritingPromptGenerator() {
             className="w-full bg-muted hover:bg-accent/50 text-muted-foreground hover:text-foreground font-body py-2 px-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 text-sm"
           >
             <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
-            ↻ New Prompt
+            New Prompt
           </button>
         </div>
       </div>
