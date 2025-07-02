@@ -465,9 +465,13 @@ function AlbumsContent() {
           <h2 className="text-2xl font-bold">Your Albums</h2>
         </div>
         
-        <TabsList className="mb-8 overflow-x-auto flex w-full">
+        <TabsList className="mb-8 overflow-x-auto flex w-full bg-muted p-1 rounded-lg">
           {albums.map(album => (
-            <TabsTrigger key={album._id} value={album._id} className="flex-shrink-0">
+            <TabsTrigger 
+              key={album._id} 
+              value={album._id} 
+              className="flex-shrink-0 px-4 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border hover:bg-background/50"
+            >
               {album.title}
             </TabsTrigger>
           ))}
@@ -476,6 +480,17 @@ function AlbumsContent() {
         {/* Album Content */}
         {albums.map(album => (
           <TabsContent key={album._id} value={album._id} className="space-y-6">
+            {/* Album Title with Active Indicator */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-1 h-8 bg-primary rounded-full"></div>
+              <div>
+                <h3 className="text-2xl font-bold text-foreground">{album.title}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {album.memories?.length || 0} {album.memories?.length === 1 ? 'memory' : 'memories'}
+                </p>
+              </div>
+            </div>
+            
             <div className="flex flex-col md:flex-row gap-6 mb-6">
               {/* Album Details */}
               <div className="w-full md:w-1/3">
@@ -603,13 +618,14 @@ function AlbumsContent() {
         </div>
 
         {/* Create Album Card */}
-        <div className="max-w-md mx-auto mb-16">
+        <div className="max-w-4xl mx-auto mb-16">
           <NewEntryCard 
             onSubmit={handleCreateAlbum}
             title="Create New Album"
             includeContent={true}
             includeImage={true}
             buttonText="Create Album"
+            layout="horizontal"
           />
         </div>
 

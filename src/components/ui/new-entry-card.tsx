@@ -19,6 +19,7 @@ interface NewEntryCardProps {
   includeImage?: boolean
   additionalFields?: React.ReactNode
   buttonText?: string
+  layout?: 'vertical' | 'horizontal'
 }
 
 /**
@@ -34,7 +35,8 @@ export default function NewEntryCard({
   includeContent = true,
   includeImage = false,
   additionalFields,
-  buttonText = 'Create'
+  buttonText = 'Create',
+  layout = 'vertical'
 }: NewEntryCardProps) {
   const [isCreating, setIsCreating] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -107,51 +109,108 @@ export default function NewEntryCard({
         </CardHeader>
         
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="title" className="text-sm font-medium">
-              Title
-            </label>
-            <Input
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              placeholder="Enter title..."
-              required
-            />
-          </div>
-          
-          {includeContent && (
-            <div className="space-y-2">
-              <label htmlFor="content" className="text-sm font-medium">
-                Content
-              </label>
-              <Textarea
-                id="content"
-                name="content"
-                value={formData.content}
-                onChange={handleInputChange}
-                placeholder="Enter content..."
-                rows={4}
-              />
+          {layout === 'horizontal' && includeImage ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Form Fields */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="title" className="text-sm font-medium">
+                    Title
+                  </label>
+                  <Input
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="Enter title..."
+                    required
+                  />
+                </div>
+                
+                {includeContent && (
+                  <div className="space-y-2">
+                    <label htmlFor="content" className="text-sm font-medium">
+                      Description
+                    </label>
+                    <Textarea
+                      id="content"
+                      name="content"
+                      value={formData.content}
+                      onChange={handleInputChange}
+                      placeholder="Enter description..."
+                      rows={4}
+                      className="resize-none"
+                    />
+                  </div>
+                )}
+                
+                {additionalFields}
+              </div>
+              
+              {/* Right Column - Image Upload */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Cover Image</label>
+                <div className="flex items-center justify-center h-full min-h-[200px]">
+                  <ImageUpload
+                    onImageUploaded={handleImageUploaded}
+                    defaultImage={formData.image}
+                    height={180}
+                    width={300}
+                    caption="Add Cover"
+                    editMode={true}
+                  />
+                </div>
+              </div>
             </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <label htmlFor="title" className="text-sm font-medium">
+                  Title
+                </label>
+                <Input
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="Enter title..."
+                  required
+                />
+              </div>
+              
+              {includeContent && (
+                <div className="space-y-2">
+                  <label htmlFor="content" className="text-sm font-medium">
+                    Content
+                  </label>
+                  <Textarea
+                    id="content"
+                    name="content"
+                    value={formData.content}
+                    onChange={handleInputChange}
+                    placeholder="Enter content..."
+                    rows={4}
+                  />
+                </div>
+              )}
+              
+              {includeImage && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Image</label>
+                  <ImageUpload
+                    onImageUploaded={handleImageUploaded}
+                    defaultImage={formData.image}
+                    height={200}
+                    width={400}
+                    caption="Add Image"
+                    editMode={true}
+                  />
+                </div>
+              )}
+              
+              {additionalFields}
+            </>
           )}
-          
-          {includeImage && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Image</label>
-              <ImageUpload
-                onImageUploaded={handleImageUploaded}
-                defaultImage={formData.image}
-                height={200}
-                width={400}
-                caption="Add Image"
-                editMode={true}
-              />
-            </div>
-          )}
-          
-          {additionalFields}
         </CardContent>
         
         <CardFooter className="flex justify-between">
