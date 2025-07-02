@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Heart } from "lucide-react"
 import { UserButton, useUser } from '@clerk/nextjs'
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function Header() {
   const { user } = useUser()
@@ -43,6 +44,7 @@ export default function Header() {
 
         {/* User Authentication */}
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           {user ? (
             <>
               <span className="text-muted-foreground font-body hidden sm:block">

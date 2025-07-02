@@ -4,7 +4,7 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Story & Atmosphere */}
-      <div className="hidden lg:flex lg:flex-1 relative overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+      <div className="hidden lg:flex lg:flex-1 relative overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-slate-800 dark:via-purple-900/50 dark:to-rose-900/40">
         {/* Vintage paper texture background */}
         <div 
           className="absolute inset-0 opacity-30"
@@ -66,7 +66,7 @@ export default function SignUpPage() {
       </div>
 
       {/* Right Side - Sign Up Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-bl from-amber-25 to-orange-25">
+      <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-bl from-amber-25 to-orange-25 dark:from-slate-900 dark:to-purple-900/30">
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8">

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Updated color palette with warm, nostalgic tones */
+  /* Light mode - Updated color palette with warm, nostalgic tones */
   --background: #FDF4E3;
   --foreground: #3B2F2F;
   --primary: #d2abaf;
@@ -15,6 +15,19 @@
   /* Font variables */
   --font-dancing-script: 'Dancing Script', cursive;
   --font-merriweather: 'Merriweather', serif;
+}
+
+.dark {
+  /* Dark mode - Warm, romantic dark palette */
+  --background: #1A1515;
+  --foreground: #F5E6D3;
+  --primary: #8B6F6F;
+  --accent: #6B4F4F;
+  --muted: #2D2020;
+  --muted-foreground: #B8A898;
+  --card: #2A1F1F;
+  --card-foreground: #F5E6D3;
+  --border: #4A3535;
 }
 
 * {

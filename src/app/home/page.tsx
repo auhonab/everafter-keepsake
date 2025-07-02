@@ -74,7 +74,7 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background dark:bg-background">
       <Header />
       
       <main className="space-y-0">
