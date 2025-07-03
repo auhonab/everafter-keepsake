@@ -63,7 +63,8 @@ function AlbumsContent() {
     try {
       setIsLoading(true)
       const response = await api.getAlbums()
-      const fetchedAlbums = response as unknown as Album[]
+      // Access the albums property from the response
+      const fetchedAlbums = (response as unknown as { albums: Album[] }).albums || []
       setAlbums(fetchedAlbums)
       
       // Set the first album as active if we have any
