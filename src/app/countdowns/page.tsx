@@ -39,7 +39,7 @@ export default function Countdowns() {
       setIsLoading(true)
       // Get milestones but filter for countdowns only
       const response = await api.getMilestones()
-      const fetchedMilestones = (response as Record<string, unknown>).milestones as Countdown[] || []
+      const fetchedMilestones = (response as unknown as { milestones: Countdown[] }).milestones || []
       
       // Filter for countdown type milestones only (identified by title prefix)
       const countdownMilestones = fetchedMilestones.filter((milestone: Countdown) => 
@@ -90,7 +90,7 @@ export default function Countdowns() {
       
       console.log('Countdown creation response:', response);
       
-      const createdCountdown = (response as Record<string, unknown>).milestone as Countdown
+      const createdCountdown = (response as unknown as { milestone: Countdown }).milestone
       
       if (!createdCountdown) {
         throw new Error('No milestone returned from API');
@@ -133,7 +133,7 @@ export default function Countdowns() {
       const response = await api.updateMilestone(id, data)
       
       setCountdowns(countdowns.map(countdown => 
-        countdown._id === id ? (response as Record<string, unknown>).milestone as Countdown : countdown
+        countdown._id === id ? (response as unknown as { milestone: Countdown }).milestone : countdown
       ))
       
       toast({

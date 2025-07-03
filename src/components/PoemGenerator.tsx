@@ -50,7 +50,7 @@ export default function PoemGenerator() {
       // Generate a personalized poem based on the form values
       const poemTemplate = generatePoem(values)
       setPoem(poemTemplate)
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Something went wrong!",

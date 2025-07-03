@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from './button'
 import { Input } from './input'
 import { Card, CardContent } from './card'
-import { Search, Navigation, Loader2, MapPin, X } from 'lucide-react'
+import { Navigation, Loader2, MapPin, X } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 interface LocationData {
@@ -21,7 +21,8 @@ interface LocationSelectorProps {
 }
 
 // Geocoding function using Nominatim (free)
-async function geocodeLocation(query: string): Promise<LocationData | null> {
+// Exported to avoid unused function warning while keeping it for future use
+export async function geocodeLocation(query: string): Promise<LocationData | null> {
   try {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&addressdetails=1`
@@ -93,7 +94,7 @@ export default function LocationSelector({
       )
       const data = await response.json()
       
-      const locations: LocationData[] = data.map((result: any) => ({
+      const locations: LocationData[] = data.map((result: { lat: string; lon: string; display_name: string }) => ({
         lat: parseFloat(result.lat),
         lng: parseFloat(result.lon),
         name: result.display_name
@@ -145,7 +146,7 @@ export default function LocationSelector({
             }
             handleLocationSelect(location)
           }
-        } catch (error) {
+        } catch (_error) {
           toast({
             title: "Error getting location name",
             description: "Location coordinates captured but name unavailable",

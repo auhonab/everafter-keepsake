@@ -57,7 +57,7 @@ export function CountdownTimer({ title, date }: CountdownTimerProps) {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [date])
+  }, [date, calculateTimeLeft])
 
   // Prevent hydration errors by not rendering until mounted
   if (!mounted) {

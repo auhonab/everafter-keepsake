@@ -65,7 +65,7 @@ export default function WelcomePage() {
         {/* Decorative Quote */}
         <div className="mt-16 opacity-80">
           <p className="text-slate-700 dark:text-amber-200 font-script text-lg italic font-medium">
-            "Love is not just looking at each other, it's looking in the same direction."
+            &ldquo;Love is not just looking at each other, it&apos;s looking in the same direction.&rdquo;
           </p>
         </div>
       </div>

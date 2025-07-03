@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 import Header from "@/components/common/Header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardContent, CardHeader } from "@/components/ui/card"
 import { InteractiveCard } from "@/components/ui/interactive-card"
-import { PenSquare, Heart, PlusCircle } from "lucide-react"
+import { Heart } from "lucide-react"
 import EditableContent from "@/components/ui/editable-content"
 import DeleteButton from "@/components/ui/delete-button"
 import NewEntryCard from "@/components/ui/new-entry-card"
@@ -17,13 +17,22 @@ interface LoveNote {
   _id: string
   title?: string
   content: string
-  sender: any
-  recipient: any
+  sender: {
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    profileImage?: string;
+  }
+  recipient: {
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    profileImage?: string;
+  }
   isRead: boolean
   scheduledFor?: string
   style?: string
   createdAt: string
-
 }
 
 export default function LoveNotes() {
@@ -31,11 +40,7 @@ export default function LoveNotes() {
   const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
   
-  useEffect(() => {
-    loadLoveNotes()
-  }, [])
-  
-  const loadLoveNotes = async () => {
+  const loadLoveNotes = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await api.getLoveNotes()
@@ -52,7 +57,11 @@ export default function LoveNotes() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
+  
+  useEffect(() => {
+    loadLoveNotes()
+  }, [loadLoveNotes])
   
   const handleCreateNote = async (data: { title?: string; content?: string }) => {
     try {
@@ -83,7 +92,7 @@ export default function LoveNotes() {
     }
   }
   
-  const handleUpdateNote = async (id: string, data: any) => {
+  const handleUpdateNote = async (id: string, data: Record<string, unknown>) => {
     try {
       const response = await api.updateLoveNote(id, data)
       
@@ -138,7 +147,7 @@ export default function LoveNotes() {
             Love Notes
           </h1>
           <p className="text-lg text-muted-foreground font-body">
-            The words we've shared, kept close to the heart.
+            The words we&apos;ve shared, kept close to the heart.
           </p>
         </div>
 

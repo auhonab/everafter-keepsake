@@ -8,10 +8,10 @@ export async function GET() {
   try {
     // Check authentication status
     const { userId } = await auth()
-    let authInfo: { 
+    const authInfo: { 
       authenticated: boolean;
       userId: string | null;
-      userData: any | null;
+      userData: Record<string, unknown> | null;
     } = { 
       authenticated: false, 
       userId: null, 

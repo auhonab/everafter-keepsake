@@ -78,7 +78,7 @@ export default function EditMemoryModal({
     }
   }, [memory])
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | string[] | boolean | LocationData | null) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -157,7 +157,7 @@ export default function EditMemoryModal({
       }
 
       const response = await api.updateMemory(memory._id, updateData)
-      const updatedMemory = (response as any).memory
+      const updatedMemory = (response as unknown as { memory: Memory }).memory
 
       toast({
         title: "Memory updated successfully!",

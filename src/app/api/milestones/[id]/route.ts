@@ -70,7 +70,7 @@ export async function PATCH(
     }
 
     const body = await request.json()
-    const { title, description, date, type, image, location, isRecurring } = body
+    const { title, description, date, type, location, isRecurring } = body
     
     await dbConnect()
     

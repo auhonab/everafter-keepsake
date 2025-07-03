@@ -20,9 +20,12 @@ interface LocationData {
   name: string
 }
 
+// Import IMemory type at the top if needed
+import type { IMemory } from '@/models/Memory'
+
 interface CreateMemoryModalProps {
   trigger?: React.ReactNode
-  onMemoryCreated?: (memory: any) => void
+  onMemoryCreated?: (memory: IMemory) => void
   initialLocation?: LocationData | null
   open?: boolean
   onOpenChange?: (open: boolean) => void
@@ -51,7 +54,7 @@ export default function CreateMemoryModal({
   const modalOpen = open !== undefined ? open : isOpen
   const setModalOpen = onOpenChange || setIsOpen
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | string[] | boolean | LocationData | null) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -130,7 +133,7 @@ export default function CreateMemoryModal({
       }
 
       const response = await api.createMemory(memoryData)
-      const createdMemory = (response as any).memory
+      const createdMemory = (response as unknown as { memory: IMemory }).memory
 
       toast({
         title: "Memory created successfully!",
