@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
+import mongoose from 'mongoose'
 import dbConnect from '@/lib/mongodb'
-import { Milestone, User } from '@/models'
+import { Milestone } from '@/models'
 import { ensureUserExists } from '@/lib/ensureUser'
 
 export async function GET(request: NextRequest) {
@@ -68,8 +69,15 @@ export async function GET(request: NextRequest) {
 
     console.log('Milestones API - Query parameters:', { type, upcoming, page, limit });
 
+    // Define query type
+    interface MilestoneQuery {
+      userId: mongoose.Types.ObjectId;
+      type?: string;
+      date?: { $gte: Date };
+    }
+    
     // Build query
-    let query: any = { userId: user._id }
+    const query: MilestoneQuery = { userId: user._id }
     if (type) {
       query.type = type
     }

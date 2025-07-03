@@ -1,16 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Header from "@/components/common/Header"
 import { CountdownTimer } from "@/components/ui/countdown-timer"
 import { api } from "@/hooks/useApi"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, Calendar, Loader2, Edit, Trash2, X } from "lucide-react"
+import { Plus, Calendar, Loader2, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import EditableContent from "@/components/ui/editable-content"
 import DeleteButton from "@/components/ui/delete-button"
 
 interface Countdown {
@@ -35,19 +34,15 @@ export default function Countdowns() {
 
   const { toast } = useToast()
   
-  useEffect(() => {
-    loadCountdowns()
-  }, [])
-  
-  const loadCountdowns = async () => {
+  const loadCountdowns = useCallback(async () => {
     try {
       setIsLoading(true)
       // Get milestones but filter for countdowns only
       const response = await api.getMilestones()
-      const fetchedMilestones = (response as any).milestones || []
+      const fetchedMilestones = (response as Record<string, unknown>).milestones as Countdown[] || []
       
       // Filter for countdown type milestones only (identified by title prefix)
-      const countdownMilestones = fetchedMilestones.filter((milestone: any) => 
+      const countdownMilestones = fetchedMilestones.filter((milestone: Countdown) => 
         milestone.title && milestone.title.startsWith('[COUNTDOWN]')
       )
       
@@ -67,7 +62,11 @@ export default function Countdowns() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
+  
+  useEffect(() => {
+    loadCountdowns()
+  }, [loadCountdowns])
   
   const handleCreateCountdown = async () => {
     try {
@@ -91,7 +90,7 @@ export default function Countdowns() {
       
       console.log('Countdown creation response:', response);
       
-      const createdCountdown = (response as any).milestone
+      const createdCountdown = (response as Record<string, unknown>).milestone as Countdown
       
       if (!createdCountdown) {
         throw new Error('No milestone returned from API');
@@ -128,13 +127,13 @@ export default function Countdowns() {
     }
   }
   
-  const handleUpdateCountdown = async (id: string, data: any) => {
+  const handleUpdateCountdown = async (id: string, data: Record<string, unknown>) => {
     try {
       // Use the milestones API for now
       const response = await api.updateMilestone(id, data)
       
       setCountdowns(countdowns.map(countdown => 
-        countdown._id === id ? (response as any).milestone : countdown
+        countdown._id === id ? (response as Record<string, unknown>).milestone as Countdown : countdown
       ))
       
       toast({
@@ -212,7 +211,7 @@ export default function Countdowns() {
         ) : countdowns.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Calendar className="h-16 w-16 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground text-lg mb-6">No countdowns yet. Add your first countdown to something you're looking forward to!</p>
+            <p className="text-muted-foreground text-lg mb-6">No countdowns yet. Add your first countdown to something you&apos;re looking forward to!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">

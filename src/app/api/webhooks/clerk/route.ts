@@ -4,6 +4,20 @@ import { Webhook } from 'svix'
 import dbConnect from '@/lib/mongodb'
 import { User } from '@/models'
 
+// Define types for Clerk webhook data
+interface ClerkUserData {
+  id: string;
+  email_addresses: Array<{ email_address: string }>;
+  first_name: string;
+  last_name: string;
+  image_url: string;
+}
+
+interface ClerkEvent {
+  type: string;
+  data: ClerkUserData;
+}
+
 export async function POST(request: NextRequest) {
   // Get the headers
   const headerPayload = await headers()
@@ -25,7 +39,7 @@ export async function POST(request: NextRequest) {
   // Create a new Svix instance with your secret.
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '')
 
-  let evt: any
+  let evt: ClerkEvent
 
   // Verify the payload with the headers
   try {
@@ -33,7 +47,7 @@ export async function POST(request: NextRequest) {
       'svix-id': svix_id,
       'svix-timestamp': svix_timestamp,
       'svix-signature': svix_signature,
-    }) as any
+    }) as ClerkEvent
   } catch (err) {
     console.error('Error verifying webhook:', err)
     return new Response('Error occurred', {
@@ -68,7 +82,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleUserCreated(userData: any) {
+async function handleUserCreated(userData: ClerkUserData) {
   try {
     const user = new User({
       clerkId: userData.id,
@@ -85,7 +99,7 @@ async function handleUserCreated(userData: any) {
   }
 }
 
-async function handleUserUpdated(userData: any) {
+async function handleUserUpdated(userData: ClerkUserData) {
   try {
     await User.findOneAndUpdate(
       { clerkId: userData.id },
@@ -102,7 +116,7 @@ async function handleUserUpdated(userData: any) {
   }
 }
 
-async function handleUserDeleted(userData: any) {
+async function handleUserDeleted(userData: ClerkUserData) {
   try {
     await User.findOneAndDelete({ clerkId: userData.id })
     console.log('User deleted from MongoDB:', userData.id)

@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import dynamic from "next/dynamic"
 import Header from "@/components/common/Header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Map, MapPin, Loader2, Info, Filter, Calendar, Navigation, Search, Plus, Edit, Trash2 } from "lucide-react"
+import { MapPin, Loader2, Info, Filter, Calendar, Plus, Edit, Trash2 } from "lucide-react"
 import { api } from "@/hooks/useApi"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
@@ -79,15 +79,11 @@ export default function MemoryMap() {
   const [memoryToDelete, setMemoryToDelete] = useState<string | null>(null)
   const { toast } = useToast()
 
-  useEffect(() => {
-    loadMemories()
-  }, [])
-
-  const loadMemories = async () => {
+  const loadMemories = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await api.getMemories()
-      const fetchedMemories = (response as any).memories || []
+      const fetchedMemories = (response as unknown as Memory[]) || []
       
       // Process memories to ensure they have proper coordinate data
       const processedMemories = await Promise.all(
@@ -118,9 +114,13 @@ export default function MemoryMap() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast]);
 
-  const handleUpdateMemory = async (id: string, data: any) => {
+  useEffect(() => {
+    loadMemories();
+  }, [loadMemories]);
+
+  const handleUpdateMemory = async (id: string, data: Partial<Memory>) => {
     try {
       // If location is being updated, geocode it
       if (data.location && typeof data.location === 'string') {
@@ -132,7 +132,7 @@ export default function MemoryMap() {
       }
 
       const response = await api.updateMemory(id, data)
-      const updatedMemory = (response as any).memory
+      const updatedMemory = (response as unknown as Memory)
       
       setMemories(memories.map(memory => 
         memory._id === id ? { ...updatedMemory } : memory
@@ -502,7 +502,7 @@ export default function MemoryMap() {
               <div>
                 <h4 className="font-medium text-foreground mb-2">Managing Memories</h4>
                 <ul className="space-y-1">
-                  <li>• Click "Add Memory" to create new memories</li>
+                  <li>• Click &quot;Add Memory&quot; to create new memories</li>
                   <li>• Click anywhere on map to select location</li>
                   <li>• Use Edit button to modify memories</li>
                   <li>• Delete memories with confirmation</li>

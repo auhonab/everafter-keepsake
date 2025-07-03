@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Build query based on type
-    let query: any = {}
+    let query: Record<string, unknown> | { $or: Array<Record<string, unknown>> } = {}
     if (type === 'sent') {
       query.sender = user._id
     } else if (type === 'received') {
@@ -73,9 +73,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { title, content, recipientId, scheduledFor, style } = body
+    const { title, content, recipient, scheduledFor, style } = body
 
-    if (!content || !recipientId) {
+    if (!content || !recipient) {
       return NextResponse.json({ error: 'Content and recipient are required' }, { status: 400 })
     }
 
@@ -88,8 +88,8 @@ export async function POST(request: NextRequest) {
 
     // Handle special case for self-notes (demo)
     let recipientUser = user;
-    if (recipientId !== "self") {
-      recipientUser = await User.findById(recipientId)
+    if (recipient !== "self") {
+      recipientUser = await User.findById(recipient)
       if (!recipientUser) {
         return NextResponse.json({ error: 'Recipient not found' }, { status: 404 })
       }

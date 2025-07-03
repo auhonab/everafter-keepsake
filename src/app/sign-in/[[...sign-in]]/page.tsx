@@ -15,13 +15,13 @@ export default function SignInPage() {
         
         {/* Floating decorative elements */}
         <div className="absolute top-10 left-10 opacity-20 text-muted-foreground font-script text-sm rotate-12">
-          "Dear Diary, today we..."
+          &quot;Dear Diary, today we...&quot;
         </div>
         <div className="absolute top-32 right-16 opacity-15 text-muted-foreground font-script text-xs -rotate-6">
-          "Our first dance under starlight..."
+          &quot;Our first dance under starlight...&quot;
         </div>
         <div className="absolute bottom-40 left-8 opacity-20 text-muted-foreground font-script text-sm rotate-3">
-          "Love letters & coffee rings..."
+          &quot;Love letters & coffee rings...&quot;
         </div>
         
         {/* Watermark words */}
@@ -43,7 +43,7 @@ export default function SignInPage() {
             Where Our Story Begins
           </h1>
           <p className="text-xl font-body italic text-muted-foreground mb-8 leading-relaxed">
-            "Every moment deserves a place to live."
+            &quot;Every moment deserves a place to live.&quot;
           </p>
           
           {/* Botanical illustration */}
@@ -100,7 +100,7 @@ export default function SignInPage() {
           {/* Footer quote */}
           <div className="text-center mt-8 pt-6">
             <p className="text-muted-foreground font-body text-sm italic opacity-70">
-              "Even the smallest moment has a story."
+              &quot;Even the smallest moment has a story.&quot;
             </p>
           </div>
         </div>

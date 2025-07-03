@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Build query
-    let query: any = { userId: user._id }
+    const query: Record<string, unknown> = { userId: user._id }
     if (tag) {
       query.tags = { $in: [tag] }
     }

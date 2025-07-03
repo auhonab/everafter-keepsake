@@ -15,13 +15,13 @@ export default function SignUpPage() {
         
         {/* Floating decorative elements */}
         <div className="absolute top-16 left-12 opacity-20 text-muted-foreground font-script text-sm rotate-12">
-          "Chapter One: How we met..."
+          &quot;Chapter One: How we met...&quot;
         </div>
         <div className="absolute top-40 right-20 opacity-15 text-muted-foreground font-script text-xs -rotate-6">
-          "Promise to remember this forever..."
+          &quot;Promise to remember this forever...&quot;
         </div>
         <div className="absolute bottom-36 left-10 opacity-20 text-muted-foreground font-script text-sm rotate-3">
-          "Adventures await us..."
+          &quot;Adventures await us...&quot;
         </div>
         
         {/* Watermark words */}
@@ -44,7 +44,7 @@ export default function SignUpPage() {
             Where Our Story Begins
           </h1>
           <p className="text-xl font-body italic text-muted-foreground mb-8 leading-relaxed">
-            "Every moment deserves a place to live."
+            &quot;Every moment deserves a place to live.&quot;
           </p>
           
           {/* Botanical illustration */}
@@ -102,7 +102,7 @@ export default function SignUpPage() {
           {/* Footer quote */}
           <div className="text-center mt-8 pt-6">
             <p className="text-muted-foreground font-body text-sm italic opacity-70">
-              "Even the smallest moment has a story."
+              &quot;Even the smallest moment has a story.&quot;
             </p>
           </div>
         </div>

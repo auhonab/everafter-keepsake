@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Header from "@/components/common/Header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
@@ -23,7 +23,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import EditableContent from "@/components/ui/editable-content"
 import DeleteButton from "@/components/ui/delete-button"
-import { formatDate } from "@/lib/utils"
 
 interface Milestone {
   _id: string
@@ -51,29 +50,34 @@ export default function Timeline() {
   const [isLoading, setIsLoading] = useState(true)
   const [openDialog, setOpenDialog] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [newMilestone, setNewMilestone] = useState({
+  type MilestoneForm = {
+    title: string;
+    description: string;
+    date: string;
+    type: Milestone['type'];
+    location: string;
+    isRecurring: boolean;
+  };
+
+  const [newMilestone, setNewMilestone] = useState<MilestoneForm>({
     title: "",
     description: "",
     date: new Date().toISOString().split('T')[0],
-    type: "custom" as const,
+    type: "custom",
     location: "",
     isRecurring: false
   })
 
   const { toast } = useToast()
   
-  useEffect(() => {
-    loadMilestones()
-  }, [])
-  
-  const loadMilestones = async () => {
+  const loadMilestones = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await api.getMilestones()
-      const fetchedMilestones = (response as any).milestones || []
+      const fetchedMilestones = (response as unknown as Milestone[]) || []
       
       // Filter out countdowns from timeline (they should only appear in countdowns page)
-      const timelineMilestones = fetchedMilestones.filter((milestone: any) => 
+      const timelineMilestones = fetchedMilestones.filter((milestone: Milestone) => 
         !milestone.title || !milestone.title.startsWith('[COUNTDOWN]')
       )
       
@@ -93,7 +97,11 @@ export default function Timeline() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast]);
+
+  useEffect(() => {
+    loadMilestones();
+  }, [loadMilestones]);
   
   const handleCreateMilestone = async () => {
     try {
@@ -107,7 +115,7 @@ export default function Timeline() {
         isRecurring: newMilestone.isRecurring
       })
       
-      const createdMilestone = (response as any).milestone
+      const createdMilestone = (response as unknown as Milestone)
       
       // Add the new milestone and re-sort
       const updatedMilestones = [...milestones, createdMilestone].sort(
@@ -143,12 +151,12 @@ export default function Timeline() {
     }
   }
   
-  const handleUpdateMilestone = async (id: string, data: any) => {
+  const handleUpdateMilestone = async (id: string, data: Partial<Milestone>) => {
     try {
       const response = await api.updateMilestone(id, data)
       
       setMilestones(milestones.map(milestone => 
-        milestone._id === id ? (response as any).milestone : milestone
+        milestone._id === id ? (response as unknown as Milestone) : milestone
       ))
       
       toast({
@@ -393,7 +401,7 @@ export default function Timeline() {
                 <label htmlFor="milestoneType" className="text-sm font-medium">Type</label>
                 <Select 
                   value={newMilestone.type}
-                  onValueChange={(value: any) => setNewMilestone({...newMilestone, type: value})}
+                  onValueChange={(value: string) => setNewMilestone({...newMilestone, type: value as Milestone['type']})}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />

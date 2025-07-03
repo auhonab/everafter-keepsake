@@ -1,21 +1,19 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSearchParams } from "next/navigation"
 import Header from "@/components/common/Header"
-import { Button } from "@/components/ui/button"
 import EditableCard from "@/components/ui/editable-card"
 import NewEntryCard from "@/components/ui/new-entry-card"
 import { api } from "@/hooks/useApi"
 import { useToast } from "@/hooks/use-toast"
-import { formatDate } from "@/lib/utils"
 
 interface JournalEntry {
   _id: string
   title: string
   content: string
   date: string
-  mood?: string
+  mood?: 'happy' | 'excited' | 'grateful' | 'romantic' | 'nostalgic' | 'peaceful' | 'other'
   tags?: string[]
 }
 
@@ -28,15 +26,11 @@ export default function OurJournal() {
   // Get the prompt from URL params
   const promptFromUrl = searchParams.get('prompt')
   
-  useEffect(() => {
-    loadJournalEntries()
-  }, [])
-  
-  const loadJournalEntries = async () => {
+  const loadJournalEntries = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await api.getJournalEntries()
-      setJournalEntries((response as any).entries || [])
+      setJournalEntries((response as unknown as JournalEntry[]) || [])
     } catch (error) {
       console.error('Error loading journal entries:', error)
       toast({
@@ -47,7 +41,12 @@ export default function OurJournal() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
+
+  // Load journal entries on component mount
+  useEffect(() => {
+    loadJournalEntries()
+  }, [loadJournalEntries])
   
   const handleCreateEntry = async (data: { title: string; content?: string }) => {
     try {
@@ -57,7 +56,7 @@ export default function OurJournal() {
         date: new Date().toISOString(),
       })
       
-      setJournalEntries([(response as any).entry, ...journalEntries])
+      setJournalEntries([(response as unknown as JournalEntry), ...journalEntries])
       
       toast({
         title: "Entry created",
@@ -73,12 +72,12 @@ export default function OurJournal() {
     }
   }
   
-  const handleUpdateEntry = async (id: string, data: any) => {
+  const handleUpdateEntry = async (id: string, data: Partial<JournalEntry>) => {
     try {
       const response = await api.updateJournalEntry(id, data)
       
       setJournalEntries(journalEntries.map(entry => 
-        entry._id === id ? (response as any).entry : entry
+        entry._id === id ? (response as unknown as JournalEntry) : entry
       ))
       
       toast({

@@ -39,7 +39,9 @@ export default function LoveNotes() {
     try {
       setIsLoading(true)
       const response = await api.getLoveNotes()
-      setNotes((response as any).notes || [])
+      // Safely cast the response to the expected type
+      const data = response as unknown as { notes: LoveNote[] }
+      setNotes(data.notes || [])
     } catch (error) {
       console.error('Error loading love notes:', error)
       toast({
@@ -59,11 +61,13 @@ export default function LoveNotes() {
       const response = await api.createLoveNote({
         title: data.title || "Love Note",
         content: data.content || "",
-        recipientId: "self", // This will be handled specially in the API
+        recipient: "self", // This will be handled specially in the API
         style: "romantic",
       })
       
-      setNotes([(response as any).note, ...notes])
+      // Safely cast the response to the expected type
+      const noteData = response as unknown as { note: LoveNote }
+      setNotes([noteData.note, ...notes])
       
       toast({
         title: "Love note sent",
@@ -83,8 +87,10 @@ export default function LoveNotes() {
     try {
       const response = await api.updateLoveNote(id, data)
       
+      // Safely cast the response to the expected type
+      const updateData = response as unknown as { note: LoveNote }
       setNotes(notes.map(note => 
-        note._id === id ? (response as any).note : note
+        note._id === id ? updateData.note : note
       ))
       
       toast({

@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useEffect, useMemo } from 'react'
-import dynamic from 'next/dynamic'
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
-import { LatLngExpression, Icon, DivIcon } from 'leaflet'
-import { MapPin, Heart, Navigation, Loader2, Search, MapIcon, List, Edit, Trash2 } from 'lucide-react'
+import { LatLngExpression, DivIcon } from 'leaflet'
+import { MapPin, Navigation, Loader2, Search, MapIcon, List, Edit, Trash2 } from 'lucide-react'
 import { Button } from './button'
 import { Input } from './input'
 import { Card, CardContent } from './card'
@@ -16,7 +15,8 @@ import '../../styles/map.css'
 
 // Fix for default markers in react-leaflet
 import L from 'leaflet'
-delete (L.Icon.Default.prototype as any)._getIconUrl
+// Cast to unknown first, then to the required interface
+delete ((L.Icon.Default.prototype as unknown) as { _getIconUrl?: unknown })._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: '/leaflet/marker-icon-2x.png',
   iconUrl: '/leaflet/marker-icon.png',
@@ -42,7 +42,7 @@ interface MemoryMapProps {
   memories: Memory[]
   selectedMemory: Memory | null
   onMemorySelect: (memory: Memory | null) => void
-  onMemoryUpdate?: (id: string, data: any) => void
+  onMemoryUpdate?: (id: string, data: Partial<Memory>) => void
   onLocationSelect?: (lat: number, lng: number, name: string) => void
   onMemoryEdit?: (memory: Memory) => void
   onMemoryDelete?: (id: string) => void
@@ -83,8 +83,8 @@ async function geocodeLocation(query: string): Promise<{ lat: number; lng: numbe
       }
     }
     return null
-  } catch (error) {
-    console.error('Geocoding error:', error)
+  } catch (err) {
+    console.error('Geocoding error:', err)
     return null
   }
 }
@@ -97,8 +97,8 @@ async function reverseGeocode(lat: number, lng: number): Promise<string | null> 
     )
     const data = await response.json()
     return data.display_name || null
-  } catch (error) {
-    console.error('Reverse geocoding error:', error)
+  } catch (err) {
+    console.error('Reverse geocoding error:', err)
     return null
   }
 }
@@ -173,7 +173,7 @@ function LocationInput({
           variant: "destructive",
         })
       }
-    } catch (error) {
+    } catch (err) {
       toast({
         title: "Search error",
         description: "Unable to search for location",
@@ -207,7 +207,7 @@ function LocationInput({
               description: locationName,
             })
           }
-        } catch (error) {
+        } catch (err) {
           toast({
             title: "Error getting location name",
             description: "Location coordinates captured but name unavailable",
@@ -293,6 +293,8 @@ export default function MemoryMap({
   memories,
   selectedMemory,
   onMemorySelect,
+  // onMemoryUpdate is received but not used directly in this component
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onMemoryUpdate,
   onLocationSelect,
   onMemoryEdit,
@@ -362,7 +364,7 @@ export default function MemoryMap({
           description: "Map view updated to your current position",
         })
       },
-      (error) => {
+      () => {
         toast({
           title: "Location error",
           description: "Unable to get your current location",

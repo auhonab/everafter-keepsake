@@ -42,7 +42,7 @@ export function useFetch<T>(url: string, options?: RequestInit): FetchState<T> {
     }
 
     fetchData()
-  }, [url])
+  }, [url, options])
 
   return state
 }
@@ -75,7 +75,7 @@ export async function apiRequest<T>(
         const errorData = await response.json();
         console.error('Error response:', errorData);
         errorMessage = errorData.error || errorMessage;
-      } catch (e) {
+      } catch {
         console.error('Could not parse error response as JSON');
       }
       throw new Error(errorMessage);
@@ -90,107 +90,189 @@ export async function apiRequest<T>(
   }
 }
 
+// Import needed interfaces
+import type { IUser } from '../models/User';
+import type { IMemory } from '../models/Memory';
+import type { IJournalEntry } from '../models/JournalEntry';
+import type { ILoveNote } from '../models/LoveNote';
+import type { IAlbum } from '../models/Album';
+import type { IMilestone } from '../models/Milestone';
+
+// Type for user update payload
+interface UserUpdatePayload {
+  firstName?: string;
+  lastName?: string;
+  profileImage?: string;
+  partner?: string;
+  [key: string]: unknown;
+}
+
+// Memory creation/update payload
+interface MemoryPayload {
+  title: string;
+  description?: string;
+  date: Date | string;
+  images?: string[];
+  location?: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  locationName?: string;
+  tags?: string[];
+  isPrivate?: boolean;
+}
+
+// Journal entry creation/update payload
+interface JournalEntryPayload {
+  title: string;
+  content: string;
+  mood?: 'happy' | 'excited' | 'grateful' | 'romantic' | 'nostalgic' | 'peaceful' | 'other';
+  date: Date | string;
+  isPrivate?: boolean;
+  tags?: string[];
+}
+
+// Love note creation/update payload
+interface LoveNotePayload {
+  title?: string;
+  content: string;
+  recipient: string;
+  isRead?: boolean;
+  scheduledFor?: Date | string;
+  style?: 'romantic' | 'playful' | 'grateful' | 'supportive' | 'funny';
+}
+
+// Album creation/update payload
+interface AlbumPayload {
+  title: string;
+  description?: string;
+  coverImage?: string;
+  memories?: string[];
+  isPrivate?: boolean;
+}
+
+// Milestone creation/update payload
+interface MilestonePayload {
+  title: string;
+  description?: string;
+  date: Date | string;
+  type: 'anniversary' | 'first_date' | 'engagement' | 'wedding' | 'birthday' | 'custom';
+  location?: string;
+  isRecurring?: boolean;
+}
+
+// Dashboard data structure
+interface DashboardData {
+  recentMemories: IMemory[];
+  upcomingMilestones: IMilestone[];
+  journalCount: number;
+  memoryCount: number;
+  unreadLoveNotes: number;
+  [key: string]: unknown;
+}
+
 // Specific API functions
 export const api = {
   // User operations
-  getUser: () => apiRequest('/api/users'),
-  updateUser: (data: any) => apiRequest('/api/users', {
+  getUser: () => apiRequest<IUser>('/api/users'),
+  updateUser: (data: UserUpdatePayload) => apiRequest<IUser>('/api/users', {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
 
   // Dashboard
-  getDashboard: () => apiRequest('/api/dashboard'),
+  getDashboard: () => apiRequest<DashboardData>('/api/dashboard'),
 
   // Memories
   getMemories: (params?: Record<string, string>) => {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
-    return apiRequest(`/api/memories${query}`)
+    return apiRequest<IMemory[]>(`/api/memories${query}`)
   },
-  createMemory: (data: any) => apiRequest('/api/memories', {
+  createMemory: (data: MemoryPayload) => apiRequest<IMemory>('/api/memories', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateMemory: (id: string, data: any) => apiRequest(`/api/memories/${id}`, {
+  updateMemory: (id: string, data: Partial<MemoryPayload>) => apiRequest<IMemory>(`/api/memories/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
-  deleteMemory: (id: string) => apiRequest(`/api/memories/${id}`, {
+  deleteMemory: (id: string) => apiRequest<{ success: boolean }>(`/api/memories/${id}`, {
     method: 'DELETE',
   }),
 
   // Journal entries
   getJournalEntries: (params?: Record<string, string>) => {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
-    return apiRequest(`/api/journal${query}`)
+    return apiRequest<IJournalEntry[]>(`/api/journal${query}`)
   },
-  getJournalEntry: (id: string) => apiRequest(`/api/journal/${id}`),
-  createJournalEntry: (data: any) => apiRequest('/api/journal', {
+  getJournalEntry: (id: string) => apiRequest<IJournalEntry>(`/api/journal/${id}`),
+  createJournalEntry: (data: JournalEntryPayload) => apiRequest<IJournalEntry>('/api/journal', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateJournalEntry: (id: string, data: any) => apiRequest(`/api/journal/${id}`, {
+  updateJournalEntry: (id: string, data: Partial<JournalEntryPayload>) => apiRequest<IJournalEntry>(`/api/journal/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   }),
-  deleteJournalEntry: (id: string) => apiRequest(`/api/journal/${id}`, {
+  deleteJournalEntry: (id: string) => apiRequest<{ success: boolean }>(`/api/journal/${id}`, {
     method: 'DELETE',
   }),
 
   // Love notes
   getLoveNotes: (params?: Record<string, string>) => {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
-    return apiRequest(`/api/love-notes${query}`)
+    return apiRequest<ILoveNote[]>(`/api/love-notes${query}`)
   },
-  getLoveNote: (id: string) => apiRequest(`/api/love-notes/${id}`),
-  createLoveNote: (data: any) => apiRequest('/api/love-notes', {
+  getLoveNote: (id: string) => apiRequest<ILoveNote>(`/api/love-notes/${id}`),
+  createLoveNote: (data: LoveNotePayload) => apiRequest<ILoveNote>('/api/love-notes', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateLoveNote: (id: string, data: any) => apiRequest(`/api/love-notes/${id}`, {
+  updateLoveNote: (id: string, data: Partial<LoveNotePayload>) => apiRequest<ILoveNote>(`/api/love-notes/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   }),
-  deleteLoveNote: (id: string) => apiRequest(`/api/love-notes/${id}`, {
+  deleteLoveNote: (id: string) => apiRequest<{ success: boolean }>(`/api/love-notes/${id}`, {
     method: 'DELETE',
   }),
 
   // Albums
   getAlbums: (params?: Record<string, string>) => {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
-    return apiRequest(`/api/albums${query}`)
+    return apiRequest<IAlbum[]>(`/api/albums${query}`)
   },
-  getAlbum: (id: string) => apiRequest(`/api/albums/${id}`),
-  createAlbum: (data: any) => apiRequest('/api/albums', {
+  getAlbum: (id: string) => apiRequest<IAlbum>(`/api/albums/${id}`),
+  createAlbum: (data: AlbumPayload) => apiRequest<IAlbum>('/api/albums', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateAlbum: (id: string, data: any) => apiRequest(`/api/albums/${id}`, {
+  updateAlbum: (id: string, data: Partial<AlbumPayload>) => apiRequest<IAlbum>(`/api/albums/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   }),
-  deleteAlbum: (id: string) => apiRequest(`/api/albums/${id}`, {
+  deleteAlbum: (id: string) => apiRequest<{ success: boolean }>(`/api/albums/${id}`, {
     method: 'DELETE',
   }),
 
   // Milestones
   getMilestones: (params?: Record<string, string>) => {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
-    return apiRequest(`/api/milestones${query}`)
+    return apiRequest<IMilestone[]>(`/api/milestones${query}`)
   },
-  getMilestone: (id: string) => apiRequest(`/api/milestones/${id}`),
-  createMilestone: (data: any) => apiRequest('/api/milestones', {
+  getMilestone: (id: string) => apiRequest<IMilestone>(`/api/milestones/${id}`),
+  createMilestone: (data: MilestonePayload) => apiRequest<IMilestone>('/api/milestones', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateMilestone: (id: string, data: any) => apiRequest(`/api/milestones/${id}`, {
+  updateMilestone: (id: string, data: Partial<MilestonePayload>) => apiRequest<IMilestone>(`/api/milestones/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   }),
-  deleteMilestone: (id: string) => apiRequest(`/api/milestones/${id}`, {
+  deleteMilestone: (id: string) => apiRequest<{ success: boolean }>(`/api/milestones/${id}`, {
     method: 'DELETE',
   }),
 
   // Test database connection
-  testConnection: () => apiRequest('/api/test'),
+  testConnection: () => apiRequest<{ success: boolean; message: string }>('/api/test'),
 }

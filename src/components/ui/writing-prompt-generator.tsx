@@ -96,7 +96,7 @@ export default function WritingPromptGenerator() {
             className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-body font-medium py-3 px-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2"
           >
             <PenTool className="w-4 h-4" />
-            ✍️ Write About This
+            Write About This
           </button>
 
           {/* New Prompt Button */}
