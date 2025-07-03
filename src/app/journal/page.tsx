@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Header from "@/components/common/Header"
 import EditableCard from "@/components/ui/editable-card"
@@ -17,7 +17,8 @@ interface JournalEntry {
   tags?: string[]
 }
 
-export default function OurJournal() {
+// Client component that uses useSearchParams
+function JournalContent() {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
@@ -30,7 +31,7 @@ export default function OurJournal() {
     try {
       setIsLoading(true)
       const response = await api.getJournalEntries()
-      setJournalEntries((response as unknown as JournalEntry[]) || [])
+      setJournalEntries((response as unknown as { entries: JournalEntry[] }).entries || [])
     } catch (error) {
       console.error('Error loading journal entries:', error)
       toast({
@@ -56,7 +57,9 @@ export default function OurJournal() {
         date: new Date().toISOString(),
       })
       
-      setJournalEntries([(response as unknown as JournalEntry), ...journalEntries])
+      const createdEntry = (response as unknown as { entry: JournalEntry }).entry || response as unknown as JournalEntry
+      
+      setJournalEntries([createdEntry, ...journalEntries])
       
       toast({
         title: "Entry created",
@@ -76,8 +79,10 @@ export default function OurJournal() {
     try {
       const response = await api.updateJournalEntry(id, data)
       
+      const updatedEntry = (response as unknown as { entry: JournalEntry }).entry || response as unknown as JournalEntry
+      
       setJournalEntries(journalEntries.map(entry => 
-        entry._id === id ? (response as unknown as JournalEntry) : entry
+        entry._id === id ? updatedEntry : entry
       ))
       
       toast({
@@ -166,5 +171,31 @@ export default function OurJournal() {
         </div>
       </main>
     </div>
+  )
+}
+
+// Default export that wraps the client component in a Suspense boundary
+export default function JournalPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-12">
+          <div className="text-center mb-16">
+            <h1 className="text-5xl font-headline font-bold text-foreground mb-4">
+              Our Journal
+            </h1>
+            <p className="text-lg text-muted-foreground font-body">
+              Reflections on our journey, moments of growth, and heartfelt words.
+            </p>
+          </div>
+          <div className="col-span-3 text-center py-10">
+            <div className="animate-pulse">Loading journal...</div>
+          </div>
+        </main>
+      </div>
+    }>
+      <JournalContent />
+    </Suspense>
   )
 }

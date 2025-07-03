@@ -173,7 +173,7 @@ function LocationInput({
           variant: "destructive",
         })
       }
-    } catch (err) {
+    } catch {
       toast({
         title: "Search error",
         description: "Unable to search for location",
@@ -207,7 +207,7 @@ function LocationInput({
               description: locationName,
             })
           }
-        } catch (err) {
+        } catch {
           toast({
             title: "Error getting location name",
             description: "Location coordinates captured but name unavailable",

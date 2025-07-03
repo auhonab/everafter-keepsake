@@ -12,7 +12,7 @@ function isValidObjectId(id: string): boolean {
 // GET a specific love note by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -21,7 +21,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid love note ID' }, { status: 400 })
@@ -65,7 +65,7 @@ export async function GET(
 // PATCH to update a love note
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -74,7 +74,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid love note ID' }, { status: 400 })
@@ -127,7 +127,7 @@ export async function PATCH(
 // DELETE a love note
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -136,7 +136,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid love note ID' }, { status: 400 })

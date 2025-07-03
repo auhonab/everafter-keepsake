@@ -12,7 +12,7 @@ function isValidObjectId(id: string): boolean {
 // GET a specific milestone by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -21,7 +21,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid milestone ID' }, { status: 400 })
@@ -54,7 +54,7 @@ export async function GET(
 // PATCH to update a milestone
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -63,7 +63,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid milestone ID' }, { status: 400 })
@@ -109,7 +109,7 @@ export async function PATCH(
 // PUT to update a milestone (complete replacement)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -118,7 +118,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid milestone ID' }, { status: 400 })
@@ -168,7 +168,7 @@ export async function PUT(
 // DELETE a milestone
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -177,7 +177,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid milestone ID' }, { status: 400 })

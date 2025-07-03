@@ -4,7 +4,8 @@ import mongoose from 'mongoose'
 const DISCONNECTED = 0;
 const CONNECTED = 1;
 const CONNECTING = 2;
-const DISCONNECTING = 3;
+// DISCONNECTING is not used but kept as a comment for documentation
+// const DISCONNECTING = 3;
 
 const MONGODB_URI = process.env.MONGODB_URI
 

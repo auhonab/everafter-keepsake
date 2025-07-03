@@ -13,6 +13,7 @@ import DeleteButton from "@/components/ui/delete-button"
 import ImageUpload from "@/components/ui/image-upload"
 import NewEntryCard from "@/components/ui/new-entry-card"
 import { api } from "@/hooks/useApi"
+import { AlbumPayload } from "@/hooks/useApi"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -62,7 +63,7 @@ function AlbumsContent() {
     try {
       setIsLoading(true)
       const response = await api.getAlbums()
-      const fetchedAlbums = (response as { albums: Album[] }).albums || []
+      const fetchedAlbums = response as unknown as Album[]
       setAlbums(fetchedAlbums)
       
       // Set the first album as active if we have any
@@ -93,7 +94,7 @@ function AlbumsContent() {
         coverImage: data.image
       })
       
-      const newAlbum = (response as { album: Album }).album
+      const newAlbum = response as unknown as Album
       setAlbums([...albums, newAlbum])
       setActiveTab(newAlbum._id)
       
@@ -113,10 +114,16 @@ function AlbumsContent() {
   
   const handleUpdateAlbum = async (id: string, data: Partial<Album>) => {
     try {
-      const response = await api.updateAlbum(id, data)
+      // Convert memories array to string IDs if present
+      const payload: Partial<AlbumPayload> = {
+        ...data,
+        memories: data.memories?.map(m => m._id)
+      };
+      
+      const response = await api.updateAlbum(id, payload)
       
       setAlbums(albums.map(album => 
-        album._id === id ? (response as { album: Album }).album : album
+        album._id === id ? response as unknown as Album : album
       ))
       
       toast({
@@ -197,7 +204,7 @@ function AlbumsContent() {
       
       console.log('Memory creation response:', response);
       
-      const createdMemory = (response as { memory: Memory }).memory
+      const createdMemory = response as unknown as Memory
       
       // Update the album to include this memory
       const albumResponse = await api.updateAlbum(selectedAlbum._id, {
@@ -206,7 +213,7 @@ function AlbumsContent() {
       
       // Update local state
       setAlbums(albums.map(album => 
-        album._id === selectedAlbum._id ? (albumResponse as { album: Album }).album : album
+        album._id === selectedAlbum._id ? albumResponse as unknown as Album : album
       ))
       
       // Reset form and close dialog
@@ -237,7 +244,7 @@ function AlbumsContent() {
   const handleUpdateMemory = async (id: string, data: Partial<Memory>) => {
     try {
       const response = await api.updateMemory(id, data)
-      const updatedMemory = (response as { memory: Memory }).memory
+      const updatedMemory = response as unknown as Memory
       
       // Update the memory in its album
       setAlbums(albums.map(album => {

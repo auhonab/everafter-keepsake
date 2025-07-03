@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Edit, MoreVertical, Calendar } from 'lucide-react'
+import { Edit, Calendar } from 'lucide-react'
 import EditableContent from '@/components/ui/editable-content'
 import DeleteButton from '@/components/ui/delete-button'
 import ImageUpload from '@/components/ui/image-upload'
@@ -14,7 +14,7 @@ interface EditableCardProps {
   content?: string
   date?: Date | string
   image?: string
-  onUpdate: (id: string, data: any) => Promise<void>
+  onUpdate: (id: string, data: Record<string, string>) => Promise<void>
   onDelete: (id: string) => Promise<void>
   onImageUpdate?: (id: string, imageUrl: string) => Promise<void>
   className?: string

@@ -11,7 +11,7 @@ function isValidObjectId(id: string): boolean {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -20,6 +20,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
+
     await dbConnect()
     
     const user = await User.findOne({ clerkId: userId })
@@ -27,7 +29,7 @@ export async function GET(
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const memory = await Memory.findOne({ _id: params.id, userId: user._id })
+    const memory = await Memory.findOne({ _id: id, userId: user._id })
       .populate('userId', 'firstName lastName')
 
     if (!memory) {
@@ -43,7 +45,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -52,6 +54,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await request.json()
     const { title, description, date, images, location, tags, isPrivate } = body
 
@@ -62,7 +65,7 @@ export async function PUT(
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const memory = await Memory.findOne({ _id: params.id, userId: user._id })
+    const memory = await Memory.findOne({ _id: id, userId: user._id })
 
     if (!memory) {
       return NextResponse.json({ error: 'Memory not found' }, { status: 404 })
@@ -89,7 +92,7 @@ export async function PUT(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -98,7 +101,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid memory ID' }, { status: 400 })
@@ -141,7 +144,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -150,7 +153,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
 
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid memory ID' }, { status: 400 })

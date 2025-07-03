@@ -32,23 +32,23 @@ export function CountdownTimer({ title, date }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({})
   const [mounted, setMounted] = useState(false)
 
-  const calculateTimeLeft = (): TimeLeft => {
-    const difference = +new Date(date) - +new Date()
-    let timeLeft: TimeLeft = {}
+  useEffect(() => {
+    const calculateTimeLeft = (): TimeLeft => {
+      const difference = +new Date(date) - +new Date()
+      let timeLeft: TimeLeft = {}
 
-    if (difference > 0) {
-      timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
+      if (difference > 0) {
+        timeLeft = {
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        }
       }
+
+      return timeLeft
     }
 
-    return timeLeft
-  }
-
-  useEffect(() => {
     setMounted(true)
     setTimeLeft(calculateTimeLeft())
 
@@ -57,7 +57,7 @@ export function CountdownTimer({ title, date }: CountdownTimerProps) {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [date, calculateTimeLeft])
+  }, [date])
 
   // Prevent hydration errors by not rendering until mounted
   if (!mounted) {

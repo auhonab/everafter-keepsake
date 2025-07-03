@@ -13,7 +13,7 @@ function isValidObjectId(id: string): boolean {
 // GET a specific album by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -22,7 +22,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await context.params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid album ID' }, { status: 400 })
@@ -57,7 +57,7 @@ export async function GET(
 // PUT to update an album
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -66,7 +66,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await context.params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid album ID' }, { status: 400 })
@@ -113,7 +113,7 @@ export async function PUT(
 // PATCH to update an album (similar to PUT but partial update)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -122,7 +122,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await context.params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid album ID' }, { status: 400 })
@@ -169,7 +169,7 @@ export async function PATCH(
 // DELETE an album
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await auth()
@@ -178,7 +178,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await context.params
     
     if (!isValidObjectId(id)) {
       return NextResponse.json({ error: 'Invalid album ID' }, { status: 400 })

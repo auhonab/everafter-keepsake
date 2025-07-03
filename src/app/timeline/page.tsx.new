@@ -70,7 +70,21 @@ export default function Timeline() {
     try {
       setIsLoading(true)
       const response = await api.getMilestones()
-      setMilestones((response as any).milestones || [])
+      
+      // Ensure we're accessing the milestones property from the response
+      const fetchedMilestones = (response as unknown as { milestones: Milestone[] }).milestones || []
+      
+      // Filter out countdowns from timeline (they should only appear in countdowns page)
+      const timelineMilestones = fetchedMilestones.filter((milestone: Milestone) => 
+        !milestone.title || !milestone.title.startsWith('[COUNTDOWN]')
+      )
+      
+      // Sort milestones by date
+      const sortedMilestones = [...timelineMilestones].sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime()
+      })
+      
+      setMilestones(sortedMilestones)
     } catch (error) {
       console.error('Error loading milestones:', error)
       toast({

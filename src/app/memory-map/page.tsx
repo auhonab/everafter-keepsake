@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
 import Header from "@/components/common/Header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -32,7 +32,7 @@ interface Memory {
   title: string
   description?: string
   images: string[]
-  date: string
+  date: string // Changed from string | Date to just string
   location?: string
   coordinates?: {
     lat: number
@@ -40,6 +40,18 @@ interface Memory {
   }
   locationName?: string
   tags?: string[]
+  userId?: string // Using string instead of any
+  isPrivate?: boolean
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+interface MemoriesResponse {
+  memories: Memory[]
+}
+
+interface MemoryResponse {
+  memory: Memory
 }
 
 // Geocoding function using Nominatim (free)
@@ -79,27 +91,38 @@ export default function MemoryMap() {
   const [memoryToDelete, setMemoryToDelete] = useState<string | null>(null)
   const { toast } = useToast()
 
-  const loadMemories = useCallback(async () => {
+  useEffect(() => {
+    loadMemories()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const loadMemories = async () => {
     try {
       setIsLoading(true)
       const response = await api.getMemories()
-      const fetchedMemories = (response as unknown as Memory[]) || []
+      const fetchedMemories = (response as unknown as MemoriesResponse).memories || []
       
       // Process memories to ensure they have proper coordinate data
       const processedMemories = await Promise.all(
         fetchedMemories.map(async (memory: Memory) => {
+          // Make sure date is a string (it should already be, but just to be safe)
+          const memoryWithStringDate = {
+            ...memory,
+            date: typeof memory.date === 'string' ? memory.date : String(memory.date)
+          };
+          
           // If memory has location but no coordinates, try to geocode
-          if (memory.location && !memory.coordinates) {
-            const coords = await geocodeLocation(memory.location)
+          if (memoryWithStringDate.location && !memoryWithStringDate.coordinates) {
+            const coords = await geocodeLocation(memoryWithStringDate.location)
             if (coords) {
               return { 
-                ...memory, 
+                ...memoryWithStringDate, 
                 coordinates: { lat: coords.lat, lng: coords.lng },
                 locationName: coords.name 
               }
             }
           }
-          return memory
+          return memoryWithStringDate
         })
       )
       
@@ -114,11 +137,7 @@ export default function MemoryMap() {
     } finally {
       setIsLoading(false)
     }
-  }, [toast]);
-
-  useEffect(() => {
-    loadMemories();
-  }, [loadMemories]);
+  }
 
   const handleUpdateMemory = async (id: string, data: Partial<Memory>) => {
     try {
@@ -132,7 +151,7 @@ export default function MemoryMap() {
       }
 
       const response = await api.updateMemory(id, data)
-      const updatedMemory = (response as unknown as Memory)
+      const updatedMemory = (response as unknown as MemoryResponse).memory
       
       setMemories(memories.map(memory => 
         memory._id === id ? { ...updatedMemory } : memory
@@ -216,9 +235,11 @@ export default function MemoryMap() {
     }
   }
 
-  const handleMemoryCreated = (newMemory: Memory) => {
-    setMemories(prev => [...prev, newMemory])
-    setSelectedMemory(newMemory)
+  const handleMemoryCreated = (newMemory: unknown) => {
+    // Convert to our local Memory type
+    const memoryToAdd = newMemory as Memory;
+    setMemories(prev => [...prev, memoryToAdd])
+    setSelectedMemory(memoryToAdd)
     setSelectedMapLocation(null)
     toast({
       title: "Memory added to map",
@@ -226,11 +247,13 @@ export default function MemoryMap() {
     })
   }
 
-  const handleMemoryUpdated = (updatedMemory: Memory) => {
+  const handleMemoryUpdated = (updatedMemory: unknown) => {
+    // Convert to our local Memory type
+    const memoryToUpdate = updatedMemory as Memory;
     setMemories(memories.map(memory => 
-      memory._id === updatedMemory._id ? updatedMemory : memory
+      memory._id === memoryToUpdate._id ? memoryToUpdate : memory
     ))
-    setSelectedMemory(updatedMemory)
+    setSelectedMemory(memoryToUpdate)
     toast({
       title: "Memory updated on map",
       description: "Your changes are now visible on the map",

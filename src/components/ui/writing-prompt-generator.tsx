@@ -84,7 +84,7 @@ export default function WritingPromptGenerator() {
               lineHeight: '1.6'
             }}
           >
-            "{currentPrompt}"
+            &ldquo;{currentPrompt}&rdquo;
           </p>
         </div>
 

@@ -74,7 +74,9 @@ export default function Timeline() {
     try {
       setIsLoading(true)
       const response = await api.getMilestones()
-      const fetchedMilestones = (response as unknown as Milestone[]) || []
+      
+      // Ensure we're accessing the milestones property from the response
+      const fetchedMilestones = (response as unknown as { milestones: Milestone[] }).milestones || []
       
       // Filter out countdowns from timeline (they should only appear in countdowns page)
       const timelineMilestones = fetchedMilestones.filter((milestone: Milestone) => 

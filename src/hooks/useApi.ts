@@ -144,7 +144,7 @@ interface LoveNotePayload {
 }
 
 // Album creation/update payload
-interface AlbumPayload {
+export interface AlbumPayload {
   title: string;
   description?: string;
   coverImage?: string;

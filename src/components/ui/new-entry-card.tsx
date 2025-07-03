@@ -11,7 +11,7 @@ interface NewEntryCardProps {
     title: string
     content?: string
     image?: string
-    [key: string]: any
+    [key: string]: string | undefined
   }) => Promise<void>
   className?: string
   title?: string

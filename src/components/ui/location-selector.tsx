@@ -146,7 +146,7 @@ export default function LocationSelector({
             }
             handleLocationSelect(location)
           }
-        } catch (_error) {
+        } catch {
           toast({
             title: "Error getting location name",
             description: "Location coordinates captured but name unavailable",
