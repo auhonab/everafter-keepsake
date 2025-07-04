@@ -79,9 +79,11 @@ export default function Timeline() {
       const fetchedMilestones = (response as unknown as { milestones: Milestone[] }).milestones || []
       
       // Filter out countdowns from timeline (they should only appear in countdowns page)
-      const timelineMilestones = fetchedMilestones.filter((milestone: Milestone) => 
-        !milestone.title || (typeof milestone.title === 'string' && !milestone.title.startsWith('[COUNTDOWN]'))
-      )
+      // Add a null/undefined check before accessing title property
+      const timelineMilestones = fetchedMilestones.filter((milestone: Milestone) => {
+        // Check if milestone and milestone.title exist before using startsWith
+        return !milestone?.title || !String(milestone.title).startsWith('[COUNTDOWN]')
+      })
       
       // Sort milestones by date
       const sortedMilestones = [...timelineMilestones].sort((a, b) => {
@@ -117,30 +119,36 @@ export default function Timeline() {
         isRecurring: newMilestone.isRecurring
       })
       
-      const createdMilestone = (response as unknown as Milestone)
+      // Handle the API response structure correctly
+      // The API returns { milestone: { ...milestoneData } }
+      const createdMilestone = (response as unknown as { milestone: Milestone }).milestone
       
-      // Add the new milestone and re-sort
-      const updatedMilestones = [...milestones, createdMilestone].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      )
-      
-      setMilestones(updatedMilestones)
-      setOpenDialog(false)
-      
-      // Reset form
-      setNewMilestone({
-        title: "",
-        description: "",
-        date: new Date().toISOString().split('T')[0],
-        type: "custom",
-        location: "",
-        isRecurring: false
-      })
-      
-      toast({
-        title: "Milestone added",
-        description: "Your milestone has been added to the timeline",
-      })
+      if (createdMilestone) {
+        // Add the new milestone and re-sort
+        const updatedMilestones = [...milestones, createdMilestone].sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        )
+        
+        setMilestones(updatedMilestones)
+        setOpenDialog(false)
+        
+        // Reset form
+        setNewMilestone({
+          title: "",
+          description: "",
+          date: new Date().toISOString().split('T')[0],
+          type: "custom",
+          location: "",
+          isRecurring: false
+        })
+        
+        toast({
+          title: "Milestone added",
+          description: "Your milestone has been added to the timeline",
+        })
+      } else {
+        throw new Error('Failed to get created milestone from response')
+      }
     } catch (error) {
       console.error('Error creating milestone:', error)
       toast({
@@ -157,8 +165,12 @@ export default function Timeline() {
     try {
       const response = await api.updateMilestone(id, data)
       
+      // Handle the API response structure correctly
+      // The API likely returns the updated milestone directly or wrapped in an object
+      const updatedMilestone = (response as unknown as { milestone: Milestone }).milestone || response
+      
       setMilestones(milestones.map(milestone => 
-        milestone._id === id ? (response as unknown as Milestone) : milestone
+        milestone._id === id ? updatedMilestone : milestone
       ))
       
       toast({
@@ -197,9 +209,8 @@ export default function Timeline() {
 
   // Image uploads have been removed for milestones
   
-  const getMilestoneIcon = (type: keyof typeof typeToIcon | undefined) => {
-    // If type is undefined or not a valid key in typeToIcon, default to Sparkles
-    const IconComponent = type && typeToIcon[type as keyof typeof typeToIcon] ? typeToIcon[type as keyof typeof typeToIcon] : Sparkles
+  const getMilestoneIcon = (type: keyof typeof typeToIcon) => {
+    const IconComponent = typeToIcon[type] || Sparkles
     return IconComponent
   }
 
@@ -252,11 +263,10 @@ export default function Timeline() {
           ) : (
             <div className="space-y-12">
               {milestones.map((milestone, index) => {
+                // Ensure milestone has a valid _id, fallback to index if needed
+                const key = milestone?._id || `milestone-${index}`
                 const IconComponent = getMilestoneIcon(milestone.type)
                 const isEven = index % 2 === 0
-                
-                // Ensure we have a valid unique key
-                const key = milestone._id || `milestone-${index}`
                 
                 return (
                   <div key={key} className="relative">
@@ -274,14 +284,14 @@ export default function Timeline() {
                                     try {
                                       // Handle the date properly to avoid timezone issues
                                       const dateStr = milestone.date
-                                      if (dateStr && dateStr.includes && dateStr.includes('T')) {
+                                      if (dateStr.includes('T')) {
                                         // If it already has time, use as is
                                         return new Date(dateStr).toLocaleDateString('en-US', { 
                                           year: 'numeric', 
                                           month: 'long', 
                                           day: 'numeric'
                                         })
-                                      } else if (dateStr) {
+                                      } else {
                                         // If it's just a date (YYYY-MM-DD), treat it as local date
                                         const [year, month, day] = dateStr.split('-').map(Number)
                                         return new Date(year, month - 1, day).toLocaleDateString('en-US', {
@@ -289,12 +299,10 @@ export default function Timeline() {
                                           month: 'long', 
                                           day: 'numeric'
                                         })
-                                      } else {
-                                        return 'Unknown date'
                                       }
                                     } catch (error) {
                                       console.error('Date parsing error:', error)
-                                      return milestone.date || 'Unknown date'
+                                      return milestone.date
                                     }
                                   })()}
                                   onSave={(value) => {
@@ -368,8 +376,8 @@ export default function Timeline() {
           {/* End cap for the timeline */}
           {milestones.length > 0 && (
             <>
-              <div key="desktop-endcap" className="absolute left-1/2 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 hidden md:block"></div>
-              <div key="mobile-endcap" className="absolute left-8 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 md:hidden"></div>
+              <div className="absolute left-1/2 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 hidden md:block"></div>
+              <div className="absolute left-8 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 md:hidden"></div>
             </>
           )}
         </div>
@@ -469,7 +477,7 @@ export default function Timeline() {
             </Button>
             <Button 
               onClick={handleCreateMilestone} 
-              disabled={isSaving || !newMilestone.title || !newMilestone.title.trim() || !newMilestone.date}
+              disabled={isSaving || !newMilestone.title.trim() || !newMilestone.date}
             >
               {isSaving ? 'Saving...' : 'Add to Timeline'}
             </Button>
