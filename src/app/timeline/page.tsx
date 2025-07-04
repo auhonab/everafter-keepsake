@@ -80,7 +80,7 @@ export default function Timeline() {
       
       // Filter out countdowns from timeline (they should only appear in countdowns page)
       const timelineMilestones = fetchedMilestones.filter((milestone: Milestone) => 
-        !milestone.title || !milestone.title.startsWith('[COUNTDOWN]')
+        !milestone.title || (typeof milestone.title === 'string' && !milestone.title.startsWith('[COUNTDOWN]'))
       )
       
       // Sort milestones by date
@@ -197,8 +197,9 @@ export default function Timeline() {
 
   // Image uploads have been removed for milestones
   
-  const getMilestoneIcon = (type: keyof typeof typeToIcon) => {
-    const IconComponent = typeToIcon[type] || Sparkles
+  const getMilestoneIcon = (type: keyof typeof typeToIcon | undefined) => {
+    // If type is undefined or not a valid key in typeToIcon, default to Sparkles
+    const IconComponent = type && typeToIcon[type as keyof typeof typeToIcon] ? typeToIcon[type as keyof typeof typeToIcon] : Sparkles
     return IconComponent
   }
 
@@ -254,8 +255,11 @@ export default function Timeline() {
                 const IconComponent = getMilestoneIcon(milestone.type)
                 const isEven = index % 2 === 0
                 
+                // Ensure we have a valid unique key
+                const key = milestone._id || `milestone-${index}`
+                
                 return (
-                  <div key={milestone._id} className="relative">
+                  <div key={key} className="relative">
                     {/* Event Card */}
                     <div className={`flex ${isEven ? 'justify-start' : 'justify-end'} md:flex ${isEven ? 'md:justify-start' : 'md:justify-end'} justify-start`}>
                       <div className={`w-full md:w-5/12 ${isEven ? 'md:pr-8' : 'md:pl-8'} pl-16 md:pl-0`}>
@@ -270,14 +274,14 @@ export default function Timeline() {
                                     try {
                                       // Handle the date properly to avoid timezone issues
                                       const dateStr = milestone.date
-                                      if (dateStr.includes('T')) {
+                                      if (dateStr && dateStr.includes && dateStr.includes('T')) {
                                         // If it already has time, use as is
                                         return new Date(dateStr).toLocaleDateString('en-US', { 
                                           year: 'numeric', 
                                           month: 'long', 
                                           day: 'numeric'
                                         })
-                                      } else {
+                                      } else if (dateStr) {
                                         // If it's just a date (YYYY-MM-DD), treat it as local date
                                         const [year, month, day] = dateStr.split('-').map(Number)
                                         return new Date(year, month - 1, day).toLocaleDateString('en-US', {
@@ -285,10 +289,12 @@ export default function Timeline() {
                                           month: 'long', 
                                           day: 'numeric'
                                         })
+                                      } else {
+                                        return 'Unknown date'
                                       }
                                     } catch (error) {
                                       console.error('Date parsing error:', error)
-                                      return milestone.date
+                                      return milestone.date || 'Unknown date'
                                     }
                                   })()}
                                   onSave={(value) => {
@@ -362,8 +368,8 @@ export default function Timeline() {
           {/* End cap for the timeline */}
           {milestones.length > 0 && (
             <>
-              <div className="absolute left-1/2 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 hidden md:block"></div>
-              <div className="absolute left-8 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 md:hidden"></div>
+              <div key="desktop-endcap" className="absolute left-1/2 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 hidden md:block"></div>
+              <div key="mobile-endcap" className="absolute left-8 bottom-0 w-4 h-4 bg-accent rounded-full transform -translate-x-1/2 md:hidden"></div>
             </>
           )}
         </div>
@@ -463,7 +469,7 @@ export default function Timeline() {
             </Button>
             <Button 
               onClick={handleCreateMilestone} 
-              disabled={isSaving || !newMilestone.title.trim() || !newMilestone.date}
+              disabled={isSaving || !newMilestone.title || !newMilestone.title.trim() || !newMilestone.date}
             >
               {isSaving ? 'Saving...' : 'Add to Timeline'}
             </Button>
