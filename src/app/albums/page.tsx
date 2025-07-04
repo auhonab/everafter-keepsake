@@ -63,13 +63,50 @@ function AlbumsContent() {
     try {
       setIsLoading(true)
       const response = await api.getAlbums()
+      
       // Access the albums property from the response
       const fetchedAlbums = (response as unknown as { albums: Album[] }).albums || []
-      setAlbums(fetchedAlbums)
+      
+      // Ensure all date strings can be parsed correctly
+      const sanitizedAlbums = fetchedAlbums.map(album => {
+        // Create a copy of the album to avoid mutation issues
+        const sanitizedAlbum = { ...album };
+        
+        // Handle createdAt date
+        if (sanitizedAlbum.createdAt && typeof sanitizedAlbum.createdAt === 'string') {
+          try {
+            // Validate the date by trying to create a Date object
+            new Date(sanitizedAlbum.createdAt);
+          } catch (dateError) {
+            console.error('Invalid date format in createdAt:', sanitizedAlbum.createdAt);
+            // Use current date as fallback
+            sanitizedAlbum.createdAt = new Date().toISOString();
+          }
+        }
+        
+        // Also handle dates in memories if they exist
+        if (Array.isArray(sanitizedAlbum.memories)) {
+          sanitizedAlbum.memories = sanitizedAlbum.memories.map((memory: any) => {
+            if (memory.date && typeof memory.date === 'string') {
+              try {
+                new Date(memory.date);
+              } catch (dateError) {
+                console.error('Invalid date format in memory:', memory.date);
+                memory.date = new Date().toISOString();
+              }
+            }
+            return memory;
+          });
+        }
+        
+        return sanitizedAlbum;
+      });
+      
+      setAlbums(sanitizedAlbums)
       
       // Set the first album as active if we have any
-      if (fetchedAlbums.length > 0 && !activeTab) {
-        setActiveTab(fetchedAlbums[0]._id)
+      if (sanitizedAlbums.length > 0 && !activeTab) {
+        setActiveTab(sanitizedAlbums[0]._id)
       }
     } catch (error) {
       console.error('Error loading albums:', error)
@@ -89,13 +126,30 @@ function AlbumsContent() {
   
   const handleCreateAlbum = async (data: { title: string; content?: string; image?: string }) => {
     try {
+      console.log('Creating album with data:', data);
       const response = await api.createAlbum({
         title: data.title,
         description: data.content,
         coverImage: data.image
       })
       
-      const newAlbum = response as unknown as Album
+      console.log('Album creation response:', response);
+      
+      // Extract the album from the response
+      const newAlbum = (response as unknown as { album: Album }).album || response as unknown as Album
+      
+      // Ensure dates are properly handled
+      if (newAlbum.createdAt && typeof newAlbum.createdAt === 'string') {
+        try {
+          // Make sure we can parse the date without errors
+          new Date(newAlbum.createdAt);
+        } catch (dateError) {
+          console.error('Invalid date format in createdAt:', newAlbum.createdAt);
+          // Use current date as fallback
+          newAlbum.createdAt = new Date().toISOString();
+        }
+      }
+      
       setAlbums([...albums, newAlbum])
       setActiveTab(newAlbum._id)
       
@@ -184,10 +238,21 @@ function AlbumsContent() {
     if (!selectedAlbum) return
     
     try {
+      // Make sure we're sending a valid date format
+      let dateValue = newMemory.date;
+      
+      // Ensure we have a valid date string in YYYY-MM-DD format
+      if (typeof dateValue === 'string' && dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        // This format is already correct
+      } else {
+        // Fallback to current date in YYYY-MM-DD format
+        dateValue = new Date().toISOString().split('T')[0];
+      }
+      
       console.log('Creating memory with data:', {
         title: newMemory.title,
         description: newMemory.description,
-        date: newMemory.date,
+        date: dateValue,
         images: newMemory.images.filter(img => img),
         location: newMemory.location,
         tags: newMemory.tags ? newMemory.tags.split(',').map(tag => tag.trim()) : []
@@ -197,7 +262,7 @@ function AlbumsContent() {
       const response = await api.createMemory({
         title: newMemory.title,
         description: newMemory.description,
-        date: newMemory.date,
+        date: dateValue,
         images: newMemory.images.filter(img => img), // Filter out empty strings
         location: newMemory.location,
         tags: newMemory.tags ? newMemory.tags.split(',').map(tag => tag.trim()) : []
@@ -205,16 +270,24 @@ function AlbumsContent() {
       
       console.log('Memory creation response:', response);
       
-      const createdMemory = response as unknown as Memory
+      // Extract the memory from the response - handle different response structures
+      const createdMemory = (response as any).memory || response as unknown as Memory
+      
+      if (!createdMemory || !createdMemory._id) {
+        throw new Error('Failed to create memory - invalid response from API');
+      }
       
       // Update the album to include this memory
       const albumResponse = await api.updateAlbum(selectedAlbum._id, {
         memories: [...(selectedAlbum.memories || []).map(m => m._id), createdMemory._id]
       })
       
+      // Extract the updated album from the response
+      const updatedAlbum = (albumResponse as any).album || albumResponse as unknown as Album
+      
       // Update local state
       setAlbums(albums.map(album => 
-        album._id === selectedAlbum._id ? albumResponse as unknown as Album : album
+        album._id === selectedAlbum._id ? updatedAlbum : album
       ))
       
       // Reset form and close dialog
@@ -399,7 +472,7 @@ function AlbumsContent() {
                   <div className="flex items-center text-xs text-muted-foreground">
                     <Calendar className="mr-1 h-3 w-3" />
                     <time dateTime={memory.date}>
-                      {formatDate(new Date(memory.date))}
+                      {formatDate(memory.date)}
                     </time>
                   </div>
                   
@@ -567,7 +640,7 @@ function AlbumsContent() {
                     />
                     
                     <div className="text-sm text-muted-foreground mt-1">
-                      Created {formatDate(new Date(album.createdAt))}
+                      Created {formatDate(album.createdAt)}
                     </div>
                     
                     <div className="mt-4">
