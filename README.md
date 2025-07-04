@@ -1,96 +1,132 @@
-# Everafter Keepsake 💖
+# 💖 Everafter Keepsake: Where Memories Live Forever
 
-![Everafter Keepsake Banner](https://via.placeholder.com/1200x400?text=Everafter+Keepsake+Banner) *<!-- Replace with actual screenshot -->*
+Welcome to **Everafter Keepsake**, a heartfelt memory web app made to preserve, relive, and celebrate the journey of love. From shared adventures and handwritten notes to AI-generated poems — this full-stack app brings it all together in a dreamy, interactive space. ✨
 
-A digital sanctuary for your relationship memories, built with love and Next.js.
+📍 **Perfect for couples, close friends, or anyone wanting to treasure meaningful moments.**
 
-## 🌟 Why I Built This
+🌐 **Live Demo**: [https://everafter-keepsake.vercel.app](https://everafter-keepsake.vercel.app)
 
-"I wanted to surprise my close friend with something meaningful — and what could be better than a personal web app where we can save and relive all our memories? So, I built it."
+---
 
-Everafter Keepsake is more than an app; it's a living digital scrapbook that grows with your relationship, preserving precious moments in an interactive, beautiful way.
+## 🧰 Tech Stack
+
+* **Full Stack Framework**: Next.js 14 (App Router) ⚛️
+* **Authentication**: Clerk.dev 🔐
+* **Database**: MongoDB (Mongoose) 🍃
+* **Media Hosting**: Cloudinary 📷
+* **Maps**: OpenStreetMap + Leaflet.js 🗺️
+* **AI Integration**: Gemini API 🤖
+* **Deployment**: Vercel 🚀
+
+---
 
 ## ✨ Features
 
 ### 📅 Interactive Timeline
-- Visual journey through your relationship milestones
-- Clickable events reveal photos, messages, or videos
+
+* Scroll through your relationship’s milestones
+* Clickable events reveal personal stories, photos, or videos
 
 ### 📸 Smart Photo Albums
-- Categorized by events (vacations, anniversaries, etc.)
-- Lightbox gallery for immersive viewing
 
-### 💌 Love Notes Display
-- Both typed and scanned handwritten entries
-- Digital preservation of sentimental notes
+* Event-based galleries (e.g., trips, dates, anniversaries)
+* Lightbox for immersive photo viewing
+
+### 💌 Love Notes Archive
+
+* Upload typed or scanned handwritten letters
+* Preserve emotional messages in a digital home
 
 ### 🗺️ Map of Memories
-- OpenStreetMap + Leaflet.js integration
-- Clickable pins show photos and captions from shared places
+
+* Pin locations tied to special moments
+* View photos and mini-stories from each location
 
 ### ✍️ Relationship Journal
-- Blog-style entries for thoughts and memories
-- Option to keep posts private
 
-### ⏳ Anniversary Countdowns
-- Live countdown timers for special dates
-- Visual celebration of upcoming milestones
+* Blog-style entries to document thoughts and memories
+* Optional privacy for personal reflections
+
+### ⏳ Anniversary Countdown
+
+* Live countdowns to your important dates
+* Never miss a milestone again! 🎉
 
 ### 🤖 AI-Powered Poem Generator
-- Creates personalized poems using Gemini API
-- Generates verses inspired by your shared memories
 
-## 🛠️ Tech Stack
+* Personalized poetry crafted with Gemini API
+* Celebrate love with creative, sentimental verses
 
-**Core Framework**
-- Next.js 14 (App Router)
+---
 
-**Authentication**
-- Clerk.dev
+## 🗂️ Folder Structure
 
-**Database**
-- MongoDB (with Mongoose ODM)
+```
+everafter-keepsake/
+├── .env.local              # Environment variables
+├── package.json            # Project metadata and scripts
+├── tailwind.config.ts      # Tailwind CSS configuration
+├── next.config.ts          # Next.js config
+├── tsconfig.json           # TypeScript config
 
-**Media Storage**
-- Cloudinary
+├── public/                 # Static assets (SVGs, Leaflet map icons)
+│   └── leaflet/            # Leaflet-specific assets
 
-**Maps**
-- OpenStreetMap + Leaflet.js
+├── src/
+│   ├── app/                # App router pages & routes
+│   │   ├── (auth)/         # Sign-in and sign-up routes
+│   │   ├── timeline/       # Interactive timeline feature
+│   │   ├── albums/         # Photo album routes
+│   │   ├── journal/        # Relationship journal
+│   │   ├── love-notes/     # Love notes feature
+│   │   ├── memory-map/     # Map of memories
+│   │   ├── countdowns/     # Anniversary countdown timers
+│   │   └── api/            # API route handlers (albums, journal, etc.)
 
-**AI Integration**
-- Gemini API (Google AI)
+│   ├── components/         # Reusable React components
+│   │   ├── ui/             # UI elements like buttons, forms, modals
+│   │   ├── common/         # Layout & header
+│   │   └── features/       # Feature-specific components (e.g., PoemGenerator)
 
-**Deployment**
-- Vercel
+│   ├── hooks/              # Custom React hooks
+│   ├── lib/                # Utility functions and DB logic
+│   ├── models/             # Mongoose models (Album, JournalEntry, User, etc.)
+│   └── styles/             # Global and map-specific styles
 
-## 🚀 Live Deployment
+├── middleware.ts           # Middleware for auth or route protection
+├── fix-middleware.js       # Middleware support file for Vercel
 
-The app is currently live at: [https://everafter-keepsake.vercel.app](https://everafter-keepsake.vercel.app)
+```
 
-## 💻 Local Development
+---
 
-### Prerequisites
-- Node.js 18+
-- MongoDB Atlas account or local MongoDB instance
-- Cloudinary account
-- Google AI Studio account (for Gemini API)
-- Clerk.dev account
+## 🚀 Installation & Setup
 
-### Setup Instructions
+### 📦 Prerequisites
 
-1. **Clone the repository**
+* Node.js 18+
+* Clerk.dev account
+* MongoDB Atlas or local instance
+* Cloudinary account
+* Google AI Studio for Gemini API
+
+### 🛠 Getting Started
+
+1. **Clone the repo**
+
    ```bash
-   git clone https://github.com/yourusername/everafter-keepsake.git
+   git clone https://github.com/auhonab/everafter-keepsake.git
    cd everafter-keepsake
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
-3. **Set up environment variables**
-   Create a `.env.local` file in the root directory with the following variables:
+3. **Create a `.env.local` file** in the root with:
+
    ```env
    MONGODB_URI=your_mongodb_connection_string
    CLERK_SECRET_KEY=your_clerk_secret_key
@@ -101,63 +137,55 @@ The app is currently live at: [https://everafter-keepsake.vercel.app](https://ev
    GEMINI_API_KEY=your_gemini_api_key
    ```
 
-4. **Run the development server**
+4. **Run the app**
+
    ```bash
    npm run dev
    ```
 
-5. **Open in browser**
-   Visit `http://localhost:3000`
+5. Visit: [http://localhost:3000](http://localhost:3000)
 
-## 📁 Simplified Folder Structure
+---
 
-```
-everafter-keepsake/
-├── app/
-│   ├── (auth)/                   # Authentication routes
-│   ├── api/                      # API routes
-│   ├── dashboard/                # Main app interface
-│   ├── journal/                  # Journal components
-│   └── ...                       # Other feature routes
-├── components/                   # Reusable components
-│   ├── features/                 # Feature-specific components
-│   └── ui/                       # UI primitives
-├── lib/                          # Utility functions
-├── models/                       # MongoDB models
-├── public/                       # Static assets
-└── styles/                       # Global styles
-```
+## 💡 Usage Guide
 
-## 📸 Screenshots
+🧑‍🤝‍🧑 **Create an account or log in**
+📌 **Add events, journal entries, and photos**
+📍 **Pin memories on the interactive map**
+💌 **Preserve handwritten or typed love notes**
+🪄 **Generate a personalized poem with one click**
+💞 **Look back on your relationship anytime, beautifully**
 
-*<!-- Add your actual screenshots here -->*
-![Timeline Feature](https://via.placeholder.com/600x400?text=Timeline+Preview)
-![Photo Album](https://via.placeholder.com/600x400?text=Photo+Album+Preview)
-![Memory Map](https://via.placeholder.com/600x400?text=Memory+Map+Preview)
+---
 
-## 🚧 Future Plans
+## 📬 Contributing
 
-- [ ] Mobile app companion (React Native)
-- [ ] Shared timeline for couples
-- [ ] Automated memory reminders ("On this day...")
-- [ ] Voice note integration
-- [ ] Collaborative journal entries
-- [ ] Memory-based recommendation system
+We’d love your contributions! 🌟
 
-## 👩💻 About the Creator
+1. Fork the repo
+2. Create your branch: `git checkout -b feature/your-feature`
+3. Commit: `git commit -m "Add [feature]"`
+4. Push: `git push origin feature/your-feature`
+5. Submit a Pull Request 🚀
 
-**Auhona Basu**  
-*Computer Engineering Student & Romantic Technologist*
+---
 
-"I'm a Computer Engineering student passionate about using tech to build emotionally resonant and meaningful digital experiences. Everafter Keepsake represents my belief that technology should serve human connections, not replace them."
+## 📝 License
 
-Connect with me:  
-[GitHub](https://github.com/auhona) | [LinkedIn](https://linkedin.com/in/auhona) | [Portfolio](https://auhona.dev)
+This project is licensed under the **MIT License**.
 
-## 📜 License
+---
 
-Everafter Keepsake is open-source software licensed under the **MIT License**.
+## ✨ Creator
 
---- 
+Built with 💖 by **Auhona Basu**
+Computer Engineering @ Lassonde School of Engineering, York University
 
-*Built with love and Next.js* 💝
+🐙 [GitHub](https://github.com/auhonab) • 💼 [LinkedIn](https://www.linkedin.com/in/auhona-basu) • 📸 [Instagram](https://www.instagram.com/auhona_03)
+
+---
+
+> *"Because memories deserve more than a photo gallery — they deserve a story."*
+
+---
+
