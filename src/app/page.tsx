@@ -40,7 +40,7 @@ export default function WelcomePage() {
         <p className="text-xl md:text-2xl font script font-normal text-amber-900 dark:text-amber-200">
 
           This is a private sanctuary for our shared story. A place to preserve our most cherished memories, 
-          celebrate milestones, and watch our love story unfold.
+          celebrate milestones, and watch our story unfold.
         </p>
         
         {/* Secondary Description */}

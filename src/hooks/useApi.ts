@@ -240,14 +240,14 @@ export const api = {
   // Albums
   getAlbums: (params?: Record<string, string>) => {
     const query = params ? '?' + new URLSearchParams(params).toString() : ''
-    return apiRequest<IAlbum[]>(`/api/albums${query}`)
+    return apiRequest<{ albums: IAlbum[] }>(`/api/albums${query}`)
   },
-  getAlbum: (id: string) => apiRequest<IAlbum>(`/api/albums/${id}`),
-  createAlbum: (data: AlbumPayload) => apiRequest<IAlbum>('/api/albums', {
+  getAlbum: (id: string) => apiRequest<{ album: IAlbum }>(`/api/albums/${id}`),
+  createAlbum: (data: AlbumPayload) => apiRequest<{ album: IAlbum }>('/api/albums', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateAlbum: (id: string, data: Partial<AlbumPayload>) => apiRequest<IAlbum>(`/api/albums/${id}`, {
+  updateAlbum: (id: string, data: Partial<AlbumPayload>) => apiRequest<{ album: IAlbum }>(`/api/albums/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   }),

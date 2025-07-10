@@ -65,38 +65,42 @@ function AlbumsContent() {
       const response = await api.getAlbums()
       
       // Access the albums property from the response
-      const fetchedAlbums = (response as unknown as { albums: Album[] }).albums || []
+      // With our updated API types, it should now consistently be in this format
+      const fetchedAlbums = response?.albums || []
       
       // Ensure all date strings can be parsed correctly
       const sanitizedAlbums = fetchedAlbums.map(album => {
         // Create a copy of the album to avoid mutation issues
-        const sanitizedAlbum = { ...album };
+        const sanitizedAlbum = { ...album } as unknown as Album;
         
         // Handle createdAt date
         if (sanitizedAlbum.createdAt && typeof sanitizedAlbum.createdAt === 'string') {
           try {
             // Validate the date by trying to create a Date object
             new Date(sanitizedAlbum.createdAt);
-          } catch (dateError) {
+          } catch {
             console.error('Invalid date format in createdAt:', sanitizedAlbum.createdAt);
             // Use current date as fallback
-            sanitizedAlbum.createdAt = new Date().toISOString();
+            sanitizedAlbum.createdAt = new Date().toISOString() as unknown as string;
           }
         }
         
         // Also handle dates in memories if they exist
         if (Array.isArray(sanitizedAlbum.memories)) {
-          sanitizedAlbum.memories = sanitizedAlbum.memories.map((memory: any) => {
+          sanitizedAlbum.memories = sanitizedAlbum.memories.map((memory: Memory) => {
             if (memory.date && typeof memory.date === 'string') {
               try {
                 new Date(memory.date);
-              } catch (dateError) {
+              } catch {
                 console.error('Invalid date format in memory:', memory.date);
                 memory.date = new Date().toISOString();
               }
             }
             return memory;
           });
+        } else {
+          // Ensure memories is always an array
+          sanitizedAlbum.memories = [];
         }
         
         return sanitizedAlbum;
@@ -135,23 +139,37 @@ function AlbumsContent() {
       
       console.log('Album creation response:', response);
       
-      // Extract the album from the response
-      const newAlbum = (response as unknown as { album: Album }).album || response as unknown as Album
+      // Properly extract the album from the response
+      // The API returns { album: Album } structure
+      const newAlbum = response && typeof response === 'object' && 'album' in response 
+        ? ((response as Record<string, unknown>).album as Album) 
+        : (response as unknown as Album);
+      
+      // Ensure we have a valid album object
+      if (!newAlbum || typeof newAlbum !== 'object') {
+        throw new Error('Invalid album data received from server');
+      }
       
       // Ensure dates are properly handled
       if (newAlbum.createdAt && typeof newAlbum.createdAt === 'string') {
         try {
           // Make sure we can parse the date without errors
           new Date(newAlbum.createdAt);
-        } catch (dateError) {
+        } catch {
           console.error('Invalid date format in createdAt:', newAlbum.createdAt);
           // Use current date as fallback
           newAlbum.createdAt = new Date().toISOString();
         }
       }
       
-      setAlbums([...albums, newAlbum])
-      setActiveTab(newAlbum._id)
+      // Ensure memories array exists
+      if (!Array.isArray(newAlbum.memories)) {
+        newAlbum.memories = [];
+      }
+      
+      // Update the state with the new album
+      setAlbums(currentAlbums => [...currentAlbums, newAlbum]);
+      setActiveTab(newAlbum._id);
       
       toast({
         title: "Album created",
@@ -177,9 +195,19 @@ function AlbumsContent() {
       
       const response = await api.updateAlbum(id, payload)
       
-      setAlbums(albums.map(album => 
-        album._id === id ? response as unknown as Album : album
-      ))
+      // Properly extract the album from the response
+      const updatedAlbum = response && typeof response === 'object' && 'album' in response 
+        ? ((response as Record<string, unknown>).album as Album)
+        : (response as unknown as Album);
+      
+      // Ensure we have a valid album object
+      if (!updatedAlbum || typeof updatedAlbum !== 'object') {
+        throw new Error('Invalid album data received from server');
+      }
+      
+      setAlbums(currentAlbums => 
+        currentAlbums.map(album => album._id === id ? updatedAlbum : album)
+      )
       
       toast({
         title: "Album updated",
@@ -271,7 +299,9 @@ function AlbumsContent() {
       console.log('Memory creation response:', response);
       
       // Extract the memory from the response - handle different response structures
-      const createdMemory = (response as any).memory || response as unknown as Memory
+      const createdMemory = response && typeof response === 'object' && 'memory' in response 
+        ? (response as { memory: Memory }).memory
+        : (response as unknown as Memory)
       
       if (!createdMemory || !createdMemory._id) {
         throw new Error('Failed to create memory - invalid response from API');
@@ -283,7 +313,9 @@ function AlbumsContent() {
       })
       
       // Extract the updated album from the response
-      const updatedAlbum = (albumResponse as any).album || albumResponse as unknown as Album
+      const updatedAlbum = albumResponse && typeof albumResponse === 'object' && 'album' in albumResponse 
+        ? ((albumResponse as unknown) as { album: Album }).album
+        : (albumResponse as unknown as Album)
       
       // Update local state
       setAlbums(albums.map(album => 
