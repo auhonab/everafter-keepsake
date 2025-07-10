@@ -258,7 +258,7 @@ function AlbumsContent() {
     console.log('Memory image uploaded:', url);
     setNewMemory(prev => ({
       ...prev,
-      images: [url]
+      images: url ? [url] : [""] // Make sure we have a valid image URL or an empty placeholder
     }))
   }
   
@@ -316,11 +316,45 @@ function AlbumsContent() {
       const updatedAlbum = albumResponse && typeof albumResponse === 'object' && 'album' in albumResponse 
         ? ((albumResponse as unknown) as { album: Album }).album
         : (albumResponse as unknown as Album)
+        
+      // Important: The album response from the API might not include the full memory objects with images,
+      // so we need to manually ensure the newly created memory is included with all its data
+      if (updatedAlbum && Array.isArray(updatedAlbum.memories)) {
+        // Create a map of existing memories for easy lookup
+        const existingMemoriesMap = new Map(
+          updatedAlbum.memories
+            .filter(m => typeof m === 'object')
+            .map(m => [m._id, m])
+        );
+        
+        // If the newly created memory is not in the updated album's memories (or missing data),
+        // we need to add it or ensure it has complete data
+        if (!existingMemoriesMap.has(createdMemory._id) || 
+            !existingMemoriesMap.get(createdMemory._id)?.images?.length) {
+          // Either add the memory or update it with complete data
+          const updatedMemories = [...updatedAlbum.memories];
+          const memoryIndex = updatedMemories.findIndex(m => 
+            typeof m === 'object' && m._id === createdMemory._id
+          );
+          
+          if (memoryIndex >= 0) {
+            // Memory exists but might be missing data - update it
+            updatedMemories[memoryIndex] = createdMemory;
+          } else {
+            // Memory doesn't exist - add it
+            updatedMemories.push(createdMemory);
+          }
+          
+          updatedAlbum.memories = updatedMemories;
+        }
+      }
       
-      // Update local state
-      setAlbums(albums.map(album => 
-        album._id === selectedAlbum._id ? updatedAlbum : album
-      ))
+      // Update local state with functional form to ensure latest state
+      setAlbums(currentAlbums => 
+        currentAlbums.map(album => 
+          album._id === selectedAlbum._id ? updatedAlbum : album
+        )
+      )
       
       // Reset form and close dialog
       setNewMemory({
@@ -352,15 +386,25 @@ function AlbumsContent() {
       const response = await api.updateMemory(id, data)
       const updatedMemory = response as unknown as Memory
       
-      // Update the memory in its album
-      setAlbums(albums.map(album => {
+      // Ensure we have the images array properly preserved
+      if (data.images && !updatedMemory.images) {
+        updatedMemory.images = data.images;
+      }
+      
+      // Update the memory in its album using functional form for latest state
+      setAlbums(currentAlbums => currentAlbums.map(album => {
         if (!album.memories) return album
         
         const memoryIndex = album.memories.findIndex(m => m._id === id)
         if (memoryIndex === -1) return album
         
         const updatedMemories = [...album.memories]
-        updatedMemories[memoryIndex] = updatedMemory
+        // Merge the updated memory with existing memory data to preserve any fields
+        // that might not be returned by the API
+        updatedMemories[memoryIndex] = {
+          ...updatedMemories[memoryIndex],
+          ...updatedMemory
+        }
         
         return {
           ...album,
@@ -422,7 +466,12 @@ function AlbumsContent() {
   }
 
   const renderMemoryGrid = (memories: Memory[] = []) => {
-    if (!memories.length) {
+    // Filter out any invalid memory objects that might be in the array
+    const validMemories = memories.filter(memory => 
+      memory && typeof memory === 'object' && memory._id && memory.title
+    );
+    
+    if (!validMemories.length) {
       return (
         <div className="text-center py-10">
           <p className="text-muted-foreground">No memories in this album yet.</p>
@@ -432,7 +481,7 @@ function AlbumsContent() {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {memories.map((memory) => (
+        {validMemories.map((memory) => (
           <Card key={memory._id} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
             <div 
               className="relative aspect-[3/2] cursor-pointer group"
