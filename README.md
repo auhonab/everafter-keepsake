@@ -1,6 +1,6 @@
 # 💖 Everafter Keepsake: Where Memories Live Forever
 
-Welcome to **Everafter Keepsake**, a heartfelt memory web app made to preserve, relive, and celebrate the journey of love. From shared adventures and handwritten notes to AI-generated poems — this full-stack app brings it all together in a dreamy, interactive space. ✨
+Welcome to **Everafter Keepsake**, a heartfelt memory web app designed to preserve, relive, and celebrate the magic of friendship. From spontaneous adventures and shared inside jokes to thoughtful messages and AI-crafted poems — this full-stack app brings it all together in a joyful, interactive space. ✨
 
 📍 **Perfect for couples, close friends, or anyone wanting to treasure meaningful moments.**
 
