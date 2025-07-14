@@ -170,12 +170,6 @@ We’d love your contributions! 🌟
 
 ---
 
-## 📝 License
-
-This project is licensed under the **MIT License**.
-
----
-
 ## ✨ Creator
 
 Built with 💖 by **Auhona Basu**
