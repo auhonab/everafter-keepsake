@@ -78,6 +78,7 @@ export default function SignInPage() {
           
           {/* Clerk Sign In Component */}
           <SignIn 
+            redirectUrl="/home"
             appearance={{
               elements: {
                 formButtonPrimary: 'bg-amber-700 hover:bg-amber-800 text-amber-50 font-medium shadow-md border-0 rounded-md transition-all duration-200',

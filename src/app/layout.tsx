@@ -1,29 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Dancing_Script, Merriweather } from "next/font/google";
+import { Alegreya } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const alegreya = Alegreya({
+  variable: "--font-alegreya",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const dancingScript = Dancing_Script({
-  variable: "--font-dancing-script",
-  subsets: ["latin"],
-});
-
-const merriweather = Merriweather({
-  variable: "--font-merriweather",
-  subsets: ["latin"],
-  weight: ["300", "400", "700"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -40,7 +26,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} ${dancingScript.variable} ${merriweather.variable} font-body antialiased`}
+          className={`${alegreya.variable} font-alegreya antialiased`}
         >
           <ThemeProvider
             attribute="class"

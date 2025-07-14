@@ -10,47 +10,47 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#FDF4E3", // Soft vanilla-beige
-        foreground: "#3B2F2F", // Deep cocoa brown
+        background: "#F5F3F7", // Soft lavender-white
+        foreground: "#3A3242", // Deep lavender-gray
         primary: {
-          DEFAULT: "#FADADD", // Light blush pink
-          foreground: "#3B2F2F", // Deep cocoa brown
+          DEFAULT: "#C4B7D7", // Soft lavender
+          foreground: "#3A3242", // Deep lavender-gray
         },
         accent: {
-          DEFAULT: "#EAC8C8", // Gentle pink tint
-          foreground: "#3B2F2F", // Deep cocoa brown
+          DEFAULT: "#ACA1C5", // Muted lavender-gray
+          foreground: "#3A3242", // Deep lavender-gray
         },
         muted: {
-          DEFAULT: "#FFFDF7", // Subtle off-white
-          foreground: "#7A6E6E", // Muted taupe-grey
+          DEFAULT: "#E8E4EF", // Very light lavender
+          foreground: "#6D6379", // Muted gray-lavender
         },
         card: {
-          DEFAULT: "#FFFDF7", // Subtle off-white for card boxes
-          foreground: "#3B2F2F", // Deep cocoa brown
+          DEFAULT: "#FDFCFF", // Nearly white with lavender tint
+          foreground: "#3A3242", // Deep lavender-gray
         },
         popover: {
-          DEFAULT: "#FFFDF7", // Subtle off-white
-          foreground: "#3B2F2F", // Deep cocoa brown
+          DEFAULT: "#FDFCFF", // Nearly white with lavender tint
+          foreground: "#3A3242", // Deep lavender-gray
         },
-        border: "#EAC8C8", // Gentle pink tint for borders
-        input: "#EAC8C8", // Gentle pink tint
-        ring: "#FADADD", // Light blush pink
+        border: "#D4CCE3", // Light lavender-gray for borders
+        input: "#D4CCE3", // Light lavender-gray
+        ring: "#C4B7D7", // Soft lavender
         destructive: {
           DEFAULT: "#ef4444",
-          foreground: "#FFFDF7",
+          foreground: "#FDFCFF",
         },
         secondary: {
-          DEFAULT: "#7A6E6E", // Muted taupe-grey for secondary text
-          foreground: "#3B2F2F", // Deep cocoa brown
+          DEFAULT: "#6D6379", // Muted gray-lavender for secondary text
+          foreground: "#3A3242", // Deep lavender-gray
         },
       },
       fontFamily: {
-        headline: ['var(--font-dancing-script)', 'Dancing Script', 'cursive'],
-        body: ['var(--font-merriweather)', 'Merriweather', 'serif'],
-        serif: ['var(--font-merriweather)', 'Merriweather', 'serif'],
-        sans: ['var(--font-geist-sans)', 'sans-serif'],
-        mono: ['var(--font-geist-mono)', 'monospace'],
-        DEFAULT: ['var(--font-merriweather)', 'Merriweather', 'serif'],
+        headline: ['var(--font-alegreya)', 'Alegreya', 'serif'],
+        body: ['var(--font-alegreya)', 'Alegreya', 'serif'],
+        sans: ['var(--font-alegreya)', 'Alegreya', 'serif'],
+        serif: ['var(--font-alegreya)', 'Alegreya', 'serif'],
+        mono: ['var(--font-alegreya)', 'Alegreya', 'serif'],
+        DEFAULT: ['var(--font-alegreya)', 'Alegreya', 'serif'],
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

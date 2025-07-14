@@ -1,14 +1,14 @@
 import Link from "next/link"
 import { 
-  Calendar, 
-  Camera, 
-  BookOpen, 
-  MessageCircle, 
+  History, 
+  Images, 
+  BookHeart, 
+  PenSquare, 
   MapPin, 
-  Gift 
+  CalendarClock 
 } from "lucide-react"
 import Header from "@/components/common/Header"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import WritingPromptGenerator from "@/components/ui/writing-prompt-generator"
 import PoemGenerator from "@/components/PoemGenerator"
@@ -16,39 +16,39 @@ import PoemGenerator from "@/components/PoemGenerator"
 export default function Home() {
   const features = [
     {
-      icon: Calendar,
+      icon: History,
       title: "Timeline",
-      description: "Chronicle your journey together with meaningful milestones and memories",
+      description: "Chronicle your journey together, from the day you met to your latest adventure",
       href: "/timeline"
     },
     {
-      icon: Camera,
+      icon: Images,
       title: "Photo Albums",
-      description: "Organize and cherish your favorite moments in beautiful digital albums",
+      description: "Create shared albums for every occasion, beautifully displayed and easy to browse",
       href: "/albums"
     },
     {
-      icon: MessageCircle,
+      icon: PenSquare,
       title: "Love Notes",
-      description: "Exchange and save heartfelt messages and letters for each other",
+      description: "Write and save digital letters, capturing your thoughts and feelings for each other",
       href: "/love-notes"
     },
     {
       icon: MapPin,
       title: "Memory Map",
-      description: "Mark the locations that hold special meaning in your relationship",
+      description: "Pin your favorite moments to a world map, creating a visual story of your travels",
       href: "/memory-map"
     },
     {
-      icon: BookOpen,
+      icon: BookHeart,
       title: "Our Journal",
-      description: "Write and preserve your thoughts, feelings, and shared experiences",
+      description: "A shared diary for your friendship, with options for both private and public entries",
       href: "/journal"
     },
     {
-      icon: Gift,
+      icon: CalendarClock,
       title: "Countdowns",
-      description: "Keep track of anniversaries, special dates, and upcoming celebrations",
+      description: "Never miss a special date with a countdown to your friendship anniversaries and milestones",
       href: "/countdowns"
     }
   ]
@@ -82,13 +82,13 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-20 px-4 bg-muted/30">
+        <section className="py-20 px-4 bg-muted/30 dark:bg-muted/10">
           <div className="container mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-headline font-bold text-foreground mb-4">
+              <h2 className="text-4xl font-headline font-bold text-foreground dark:text-foreground mb-4">
                 Explore Our Keepsakes
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-body">
+              <p className="text-lg text-muted-foreground dark:text-muted-foreground/90 max-w-2xl mx-auto font-body">
                 Discover all the ways you can capture, organize, and celebrate your love story
               </p>
             </div>
@@ -98,19 +98,19 @@ export default function Home() {
                 const IconComponent = feature.icon
                 return (
                   <Link key={index} href={feature.href}>
-                    <Card className="h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group">
-                      <CardHeader className="text-center">
-                        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                          <IconComponent className="h-6 w-6 text-primary" />
+                    <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer group bg-card dark:bg-card/80 border-border/60 dark:border-border/40 shadow-sm">
+                      <CardHeader className="flex flex-row items-center gap-4">
+                        <div className="p-3 rounded-md bg-primary dark:bg-primary/80 flex items-center justify-center group-hover:bg-primary/90 dark:group-hover:bg-primary/70 transition-colors shadow-inner">
+                          <IconComponent className="h-6 w-6 text-primary-foreground" />
                         </div>
-                        <CardTitle className="text-xl font-semibold font-body">
+                        <CardTitle className="text-xl font-headline text-foreground dark:text-foreground">
                           {feature.title}
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <CardDescription className="text-center">
+                        <p className="text-muted-foreground dark:text-muted-foreground/90">
                           {feature.description}
-                        </CardDescription>
+                        </p>
                       </CardContent>
                     </Card>
                   </Link>
@@ -128,7 +128,7 @@ export default function Home() {
                 Surprise Feature
               </Badge>
               <h2 className="text-4xl font-headline font-bold text-foreground mb-4">
-                AI Love Poem Generator
+                Poem Generator
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-body">
                 Let artificial intelligence help you express your feelings with personalized love poems 
